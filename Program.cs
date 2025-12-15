@@ -16,6 +16,9 @@ builder.Services.AddTransient<TransientService>();
 builder.Services.AddScoped<ScopedService>();
 builder.Services.AddSingleton<SingletonService>();
 
+// Register Race Condition demo service (Singleton to persist state)
+builder.Services.AddSingleton<TicketService>();
+
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();
 
