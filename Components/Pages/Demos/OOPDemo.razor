@@ -1,0 +1,709 @@
+@page "/demos/oop"
+@using Demo_C_.Models
+@rendermode InteractiveServer
+
+<PageTitle>OOP Demo - Battle Arena</PageTitle>
+
+<div class="demo-page">
+    <h1>⚔️ OOP Battle Arena</h1>
+    <p class="description">
+        The Four Pillars of Object-Oriented Programming demonstrated through an RPG battle simulation.
+        Each concept is visualized with interactive hero characters.
+    </p>
+
+    <div class="pillars-overview">
+        <div class="pillar">
+            <span class="pillar-icon">📦</span>
+            <span class="pillar-name">Encapsulation</span>
+            <span class="pillar-desc">Health validation</span>
+        </div>
+        <div class="pillar">
+            <span class="pillar-icon">🧬</span>
+            <span class="pillar-name">Inheritance</span>
+            <span class="pillar-desc">Hero → Warrior/Mage</span>
+        </div>
+        <div class="pillar">
+            <span class="pillar-icon">🎭</span>
+            <span class="pillar-name">Polymorphism</span>
+            <span class="pillar-desc">Attack() differs</span>
+        </div>
+        <div class="pillar">
+            <span class="pillar-icon">📐</span>
+            <span class="pillar-name">Abstraction</span>
+            <span class="pillar-desc">Abstract Hero class</span>
+        </div>
+    </div>
+
+    @if (_selectedHero == null)
+    {
+        <div class="hero-selection">
+            <h2>🎮 Choose Your Hero</h2>
+            <p class="selection-desc">Each hero demonstrates <strong>Inheritance</strong> - they all inherit from the abstract <code>Hero</code> base class.</p>
+            
+            <div class="hero-cards">
+                <div class="hero-card warrior" @onclick="SelectWarrior">
+                    <div class="hero-icon">⚔️</div>
+                    <h3>Warrior</h3>
+                    <p class="hero-stats">120 HP • 15% Damage Reduction</p>
+                    <p class="hero-ability">Heavy melee attacks with critical hit chance</p>
+                </div>
+                
+                <div class="hero-card mage" @onclick="SelectMage">
+                    <div class="hero-icon">🔮</div>
+                    <h3>Mage</h3>
+                    <p class="hero-stats">80 HP • 100 Mana</p>
+                    <p class="hero-ability">Powerful spells with chance for Fireball</p>
+                </div>
+                
+                <div class="hero-card rogue" @onclick="SelectRogue">
+                    <div class="hero-icon">🗡️</div>
+                    <h3>Rogue</h3>
+                    <p class="hero-stats">90 HP • 25% Dodge</p>
+                    <p class="hero-ability">Stealth backstabs for triple damage</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="battle-arena">
+            <div class="hero-panel">
+                <div class="hero-header">
+                    <span class="hero-class-icon">@_selectedHero.Icon</span>
+                    <div class="hero-info">
+                        <h2>@_selectedHero.Name</h2>
+                        <span class="hero-class">@_selectedHero.Class</span>
+                    </div>
+                    <button class="btn-change" @onclick="ChangeHero">Change Hero</button>
+                </div>
+
+                <div class="health-bar-container">
+                    <div class="health-bar-label">
+                        <span>HP: @_selectedHero.Health / @_selectedHero.MaxHealth</span>
+                        <span class="health-status @(_selectedHero.IsAlive ? "alive" : "dead")">
+                            @(_selectedHero.IsAlive ? "Alive" : "Defeated!")
+                        </span>
+                    </div>
+                    <div class="health-bar">
+                        <div class="health-fill" style="width: @(_selectedHero.HealthPercentage)%"></div>
+                    </div>
+                </div>
+
+                @if (_selectedHero is Mage mage)
+                {
+                    <div class="mana-bar-container">
+                        <div class="mana-bar-label">
+                            <span>Mana: @mage.Mana / @mage.MaxMana</span>
+                        </div>
+                        <div class="mana-bar">
+                            <div class="mana-fill" style="width: @((double)mage.Mana / mage.MaxMana * 100)%"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_lastAction))
+            {
+                <div class="action-result">
+                    <div class="action-sound">@_lastSound</div>
+                    <div class="action-message">@_lastAction</div>
+                    @if (_lastDamage > 0)
+                    {
+                        <div class="action-damage">@_lastDamage damage!</div>
+                    }
+                </div>
+            }
+
+            <div class="demo-sections">
+                <!-- POLYMORPHISM Demo -->
+                <div class="demo-section polymorphism">
+                    <h3>🎭 Polymorphism: Attack()</h3>
+                    <p>Same method call, different behavior based on hero type!</p>
+                    <button class="btn btn-attack" @onclick="PerformAttack" disabled="@(!_selectedHero.IsAlive)">
+                        Attack! ⚔️
+                    </button>
+                    <div class="code-hint">
+                        <code>hero.Attack()</code> → @_selectedHero.Class has unique implementation
+                    </div>
+                </div>
+
+                <!-- ENCAPSULATION Demo -->
+                <div class="demo-section encapsulation">
+                    <h3>📦 Encapsulation: Health Validation</h3>
+                    <p>The Health property prevents invalid values.</p>
+                    <div class="encapsulation-buttons">
+                        <button class="btn btn-damage" @onclick="() => DealDamage(20)">
+                            Take 20 Damage
+                        </button>
+                        <button class="btn btn-heal" @onclick="() => HealHero(30)">
+                            Heal 30 HP
+                        </button>
+                        <button class="btn btn-invalid" @onclick="TryInvalidHealth">
+                            Try Set HP = -100
+                        </button>
+                        <button class="btn btn-reset" @onclick="ResetHero">
+                            Reset Hero
+                        </button>
+                    </div>
+                    @if (!string.IsNullOrEmpty(_encapsulationResult))
+                    {
+                        <div class="validation-result">
+                            📦 @_encapsulationResult
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Battle Log -->
+            <div class="battle-log">
+                <div class="log-header">
+                    <h3>📜 Battle Log</h3>
+                    <span class="log-count">@_selectedHero.BattleLog.Count entries</span>
+                </div>
+                <div class="log-content">
+                    @if (_selectedHero.BattleLog.Count == 0)
+                    {
+                        <p class="log-empty">No actions yet. Start battling!</p>
+                    }
+                    else
+                    {
+                        @foreach (var entry in _selectedHero.BattleLog.AsEnumerable().Reverse().Take(10))
+                        {
+                            <div class="log-entry">@entry</div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="info-panel">
+        <h3>📖 The Four Pillars in Code</h3>
+        <div class="code-examples">
+            <div class="code-example">
+                <h4>📐 Abstraction</h4>
+                <pre><code>public abstract class Hero
+{
+    public abstract Attack();
+    // Cannot instantiate Hero directly
+}</code></pre>
+            </div>
+            <div class="code-example">
+                <h4>🧬 Inheritance</h4>
+                <pre><code>public class Warrior : Hero
+{
+    // Inherits Name, Health, etc.
+    // Adds Strength property
+}</code></pre>
+            </div>
+            <div class="code-example">
+                <h4>📦 Encapsulation</h4>
+                <pre><code>private int _health;
+public int Health
+{
+    set => _health = Math.Max(0, value);
+}</code></pre>
+            </div>
+            <div class="code-example">
+                <h4>🎭 Polymorphism</h4>
+                <pre><code>// Same call, different behavior
+warrior.Attack(); // Sword slash
+mage.Attack();    // Fireball</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Hero? _selectedHero;
+    private string _lastAction = "";
+    private string _lastSound = "";
+    private int _lastDamage;
+    private string _encapsulationResult = "";
+
+    private void SelectHero(Hero hero)
+    {
+        _selectedHero = hero;
+        _lastAction = $"{hero.Name} the {hero.Class} enters the arena!";
+        _lastSound = "🎺";
+        _lastDamage = 0;
+    }
+
+    private void SelectWarrior() => SelectHero(new Warrior("Ragnar"));
+    private void SelectMage() => SelectHero(new Mage("Ravana"));
+    private void SelectRogue() => SelectHero(new Rogue("Shadow"));
+
+    private void ChangeHero()
+    {
+        _selectedHero = null;
+        _lastAction = "";
+        _lastSound = "";
+        _encapsulationResult = "";
+    }
+
+    private void PerformAttack()
+    {
+        if (_selectedHero == null || !_selectedHero.IsAlive) return;
+        
+        var (message, sound, damage) = _selectedHero.Attack();
+        _lastAction = message;
+        _lastSound = sound;
+        _lastDamage = damage;
+    }
+
+    private void DealDamage(int amount)
+    {
+        if (_selectedHero == null) return;
+        _selectedHero.TakeDamage(amount);
+        _lastAction = $"{_selectedHero.Name} takes {amount} damage!";
+        _lastSound = "💥";
+        _lastDamage = 0;
+    }
+
+    private void HealHero(int amount)
+    {
+        if (_selectedHero == null) return;
+        _selectedHero.Heal(amount);
+        _lastAction = $"{_selectedHero.Name} heals!";
+        _lastSound = "💚";
+        _lastDamage = 0;
+    }
+
+    private void TryInvalidHealth()
+    {
+        if (_selectedHero == null) return;
+        _encapsulationResult = _selectedHero.AttemptInvalidHealth(-100);
+    }
+
+    private void ResetHero()
+    {
+        if (_selectedHero == null) return;
+        _selectedHero.ResetHealth();
+        _lastAction = $"{_selectedHero.Name} is ready for battle!";
+        _lastSound = "🔄";
+        _lastDamage = 0;
+        _encapsulationResult = "";
+    }
+}
+
+<style>
+    .demo-page {
+        padding: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .demo-page h1 {
+        color: #00ff88;
+        margin-bottom: 0.5rem;
+    }
+
+    .description {
+        color: #888;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .pillars-overview {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .pillar {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem;
+        text-align: center;
+    }
+
+    .pillar-icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .pillar-name {
+        color: #00ff88;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: block;
+    }
+
+    .pillar-desc {
+        color: #666;
+        font-size: 0.75rem;
+    }
+
+    .hero-selection {
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    .hero-selection h2 {
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .selection-desc {
+        color: #888;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .hero-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .hero-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .hero-card.warrior:hover {
+        border-color: #ff6b6b;
+        box-shadow: 0 8px 24px rgba(255, 107, 107, 0.2);
+    }
+
+    .hero-card.mage:hover {
+        border-color: #a855f7;
+        box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+    }
+
+    .hero-card.rogue:hover {
+        border-color: #4ecdc4;
+        box-shadow: 0 8px 24px rgba(78, 205, 196, 0.2);
+    }
+
+    .hero-icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-card h3 {
+        margin: 0 0 0.5rem 0;
+        color: #fff;
+    }
+
+    .hero-stats {
+        color: #00ff88;
+        font-size: 0.85rem;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .hero-ability {
+        color: #888;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .battle-arena {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .hero-panel {
+        margin-bottom: 1rem;
+    }
+
+    .hero-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-class-icon {
+        font-size: 2.5rem;
+    }
+
+    .hero-info {
+        flex: 1;
+    }
+
+    .hero-info h2 {
+        margin: 0;
+        color: #fff;
+    }
+
+    .hero-class {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .btn-change {
+        padding: 0.5rem 1rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: #888;
+        cursor: pointer;
+    }
+
+    .health-bar-container, .mana-bar-container {
+        margin-bottom: 0.75rem;
+    }
+
+    .health-bar-label, .mana-bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #888;
+        margin-bottom: 0.25rem;
+    }
+
+    .health-status.alive { color: #00ff88; }
+    .health-status.dead { color: #ff6b6b; }
+
+    .health-bar, .mana-bar {
+        height: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .health-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b6b, #00ff88);
+        transition: width 0.3s ease;
+    }
+
+    .mana-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        transition: width 0.3s ease;
+    }
+
+    .action-result {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .action-sound {
+        font-size: 1.25rem;
+        color: #f59e0b;
+        margin-bottom: 0.25rem;
+    }
+
+    .action-message {
+        color: #ccc;
+    }
+
+    .action-damage {
+        color: #ff6b6b;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .demo-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .demo-section {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .demo-section h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    .demo-section.polymorphism h3 { color: #a855f7; }
+    .demo-section.encapsulation h3 { color: #4ecdc4; }
+
+    .demo-section p {
+        color: #888;
+        font-size: 0.85rem;
+        margin: 0 0 0.75rem 0;
+    }
+
+    .btn {
+        padding: 0.6rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0.25rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-attack {
+        background: linear-gradient(135deg, #a855f7, #7c3aed);
+        color: white;
+    }
+
+    .btn-damage {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        color: white;
+    }
+
+    .btn-heal {
+        background: linear-gradient(135deg, #00ff88, #00cc6a);
+        color: #1a1a2e;
+    }
+
+    .btn-invalid {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .btn-reset {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ccc;
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    .encapsulation-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .code-hint {
+        margin-top: 0.75rem;
+        padding: 0.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: #888;
+    }
+
+    .code-hint code {
+        color: #00ff88;
+    }
+
+    .validation-result {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        background: rgba(78, 205, 196, 0.15);
+        border-radius: 4px;
+        color: #4ecdc4;
+        font-size: 0.85rem;
+    }
+
+    .battle-log {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .log-header h3 {
+        margin: 0;
+        color: #fff;
+        font-size: 0.9rem;
+    }
+
+    .log-count {
+        color: #666;
+        font-size: 0.8rem;
+    }
+
+    .log-content {
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 0.75rem 1rem;
+        font-family: 'Consolas', monospace;
+        font-size: 0.8rem;
+    }
+
+    .log-empty {
+        color: #555;
+        text-align: center;
+        margin: 0;
+    }
+
+    .log-entry {
+        padding: 0.25rem 0;
+        color: #aaa;
+    }
+
+    .info-panel {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .info-panel h3 {
+        color: #00ff88;
+        margin: 0 0 1rem 0;
+        font-size: 1rem;
+    }
+
+    .code-examples {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .code-example {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .code-example h4 {
+        margin: 0;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        background: rgba(0, 0, 0, 0.3);
+        color: #ccc;
+    }
+
+    .code-example pre {
+        margin: 0;
+        padding: 0.75rem;
+        overflow-x: auto;
+    }
+
+    .code-example code {
+        font-family: 'Consolas', monospace;
+        font-size: 0.75rem;
+        color: #888;
+    }
+
+    @@media (max-width: 600px) {
+        .pillars-overview {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
