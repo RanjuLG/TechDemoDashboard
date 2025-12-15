@@ -91,15 +91,133 @@
             </div>
         </div>
 
-        <!-- Info Panel -->
-        <div class="alert alert-info">
-            <h3 class="h6 fw-bold mb-2">📖 How it works</h3>
-            <ul class="mb-2 small">
-                <li><strong>WebSocket Connection:</strong> SignalR establishes a persistent connection for instant communication</li>
-                <li><strong>Hub Pattern:</strong> The server-side ChatHub broadcasts messages to all connected clients</li>
-                <li><strong>Real-time Updates:</strong> No page refresh needed - messages appear instantly</li>
-            </ul>
-            <p class="mb-0 small"><strong>💡 Tip:</strong> Open this page in another tab or browser to see real-time sync in action!</p>
+        <!-- How it Works Section with Code Examples -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- WebSocket Connection -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">1️⃣ WebSocket Connection</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#code1" aria-expanded="false" aria-controls="code1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                SignalR establishes a persistent connection for instant communication
+                            </p>
+                            <div class="collapse" id="code1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Client-side: Establish connection
+_hubConnection = new HubConnectionBuilder()
+    .WithUrl("/chathub")           // Connect to hub endpoint
+    .WithAutomaticReconnect()      // Auto-reconnect if disconnected
+    .Build();
+
+await _hubConnection.StartAsync(); // Open WebSocket connection</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hub Pattern -->
+                    <div class="col-12">
+                        <div class="border-start border-warning border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-warning mb-0">2️⃣ Hub Pattern (Server-Side)</h4>
+                                <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#code2" aria-expanded="false" aria-controls="code2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                The server-side ChatHub broadcasts messages to all connected clients
+                            </p>
+                            <div class="collapse" id="code2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Server-side Hub (ChatHub.cs)
+public class ChatHub : Hub
+{
+    public async Task SendMessage(string user, string message)
+    {
+        // Broadcast to ALL connected clients
+        await Clients.All.SendAsync(
+            "ReceiveMessage",      // Method name
+            user,                  // Parameters
+            message,
+            DateTime.Now
+        );
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Updates -->
+                    <div class="col-12">
+                        <div class="border-start border-success border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-success mb-0">3️⃣ Real-time Updates (Client Receives)</h4>
+                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#code3" aria-expanded="false" aria-controls="code3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                No page refresh needed - messages appear instantly when received
+                            </p>
+                            <div class="collapse" id="code3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Client-side: Listen for messages from server
+_hubConnection.On&lt;string, string, DateTime&gt;(
+    "ReceiveMessage",              // Listen for this method
+    (user, message, timestamp) =>  // Callback when received
+    {
+        _messages.Add(new ChatMessage(user, message, timestamp));
+        InvokeAsync(StateHasChanged); // Update UI instantly!
+    }
+);</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Send Message -->
+                    <div class="col-12">
+                        <div class="border-start border-primary border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-primary-custom mb-0">4️⃣ Sending Messages</h4>
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#code4" aria-expanded="false" aria-controls="code4">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Client sends message to server, which broadcasts to all clients
+                            </p>
+                            <div class="collapse" id="code4">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Client-side: Send message to server
+await _hubConnection.SendAsync(
+    "SendMessage",    // Call server hub method
+    _userName,        // Parameters
+    _messageInput
+);
+
+// Server receives → Broadcasts to ALL → All clients receive instantly!</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>💡 Tip:</strong> Open this page in another tab or browser to see real-time sync in action!
+                    Messages sent from one tab appear instantly in all other tabs.
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -192,3 +310,4 @@
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
 }
+
