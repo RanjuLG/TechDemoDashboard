@@ -1,0 +1,42 @@
+﻿<!-- Sidebar Header -->
+<div class="p-3 border-bottom border-secondary">
+    <a href="/" class="d-flex align-items-center text-white text-decoration-none">
+        <span class="fs-5 me-2">⚡</span>
+        <span class="fs-5 fw-semibold">Tech Demos</span>
+    </a>
+</div>
+
+<!-- Navigation -->
+<nav class="nav flex-column p-3">
+    <p class="text-secondary text-uppercase small fw-bold mb-2 ps-2">Main</p>
+    
+    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="" Match="NavLinkMatch.All">
+        <span class="me-2">🏠</span> Home
+    </NavLink>
+
+    <p class="text-secondary text-uppercase small fw-bold mb-2 mt-3 ps-2">Demos</p>
+    
+    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/concurrency">
+        <span class="me-2">🧵</span> Concurrency
+    </NavLink>
+
+    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/signalr">
+        <span class="me-2">📡</span> SignalR Realtime
+    </NavLink>
+</nav>
+
+<!-- Footer -->
+<div class="mt-auto p-3 border-top border-secondary">
+    <small class="text-secondary">.NET 8 Blazor</small>
+</div>
+
+<style>
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .nav-link.active {
+        background-color: rgba(0, 255, 136, 0.15) !important;
+        color: #00ff88 !important;
+    }
+</style>

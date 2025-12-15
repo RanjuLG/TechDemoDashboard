@@ -1,0 +1,451 @@
+@page "/demos/concurrency"
+@using Demo_C_.Components.Shared
+@using Demo_C_.Services
+@inject ConcurrencyService ConcurrencyService
+@rendermode InteractiveServer
+
+<PageTitle>Concurrency Demo</PageTitle>
+
+<div class="demo-page">
+    <h1>🧵 Concurrency & Parallelism Demo</h1>
+    <p class="description">
+        Explore the differences between blocking, async, and parallel execution patterns in .NET.
+        Watch the log output to see how each approach behaves differently.
+    </p>
+
+    <div class="button-group">
+        <button class="btn btn-sequential" @onclick="RunSequential" disabled="@_isBusy">
+            <span class="btn-icon">🔄</span>
+            Sequential (Blocking)
+        </button>
+        
+        <button class="btn btn-async" @onclick="RunAsync" disabled="@_isBusy">
+            <span class="btn-icon">⚡</span>
+            Async (Sequential)
+        </button>
+        
+        <button class="btn btn-concurrent" @onclick="RunConcurrent" disabled="@_isBusy">
+            <span class="btn-icon">🔥</span>
+            Concurrent (Task.WhenAll)
+        </button>
+        
+        <button class="btn btn-parallel" @onclick="RunParallel" disabled="@_isBusy">
+            <span class="btn-icon">🚀</span>
+            Parallel (CPU)
+        </button>
+
+        <button class="btn btn-clear" @onclick="ClearLog" disabled="@_isBusy">
+            <span class="btn-icon">🗑️</span>
+            Clear Log
+        </button>
+    </div>
+
+    <div class="settings-group">
+        <div class="setting-item">
+            <label for="parallelism">Max Degree of Parallelism:</label>
+            <input type="range" id="parallelism" min="1" max="16" @bind="_maxDegreeOfParallelism" @bind:event="oninput" disabled="@_isBusy" />
+            <span class="setting-value">@_maxDegreeOfParallelism</span>
+        </div>
+    </div>
+
+    @if (_executionTimes.Any(kv => kv.Value.HasValue))
+    {
+        <div class="comparison-table">
+            <h3>⏱️ Execution Time Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Last Run Time</th>
+                        <th>UI Responsive</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in _executionTimes)
+                    {
+                        <tr class="@(entry.Value.HasValue ? "has-value" : "")">
+                            <td>
+                                <span class="method-icon">@GetMethodIcon(entry.Key)</span>
+                                @entry.Key
+                            </td>
+                            <td class="time-cell">
+                                @if (entry.Value.HasValue)
+                                {
+                                    <span class="time-value">@entry.Value.Value ms</span>
+                                }
+                                else
+                                {
+                                    <span class="not-run">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (entry.Key == "Sequential")
+                                {
+                                    <span class="ui-frozen">❌ Frozen</span>
+                                }
+                                else
+                                {
+                                    <span class="ui-responsive">✅ Yes</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-reset" @onclick="ResetTimes" disabled="@_isBusy">
+                🔄 Reset Times
+            </button>
+        </div>
+    }
+
+    <DemoContainer @ref="_demoContainer" Title="Execution Log" IsBusy="@_isBusy" />
+</div>
+
+@code {
+    private DemoContainer? _demoContainer;
+    private bool _isBusy;
+    private int _maxDegreeOfParallelism = 4;
+    
+    private Dictionary<string, long?> _executionTimes = new()
+    {
+        ["Sequential"] = null,
+        ["Async"] = null,
+        ["Concurrent"] = null,
+        ["Parallel"] = null
+    };
+
+    private string GetMethodIcon(string method) => method switch
+    {
+        "Sequential" => "🔄",
+        "Async" => "⚡",
+        "Concurrent" => "🔥",
+        "Parallel" => "🚀",
+        _ => ""
+    };
+
+    private void ResetTimes()
+    {
+        foreach (var key in _executionTimes.Keys.ToList())
+        {
+            _executionTimes[key] = null;
+        }
+    }
+
+    /// <summary>
+    /// Runs sequential (blocking) demo.
+    /// UI will freeze during execution.
+    /// </summary>
+    private async Task RunSequential()
+    {
+        _isBusy = true;
+        _demoContainer?.Clear();
+        StateHasChanged();
+        
+        // Small delay to let the UI render before blocking
+        await Task.Delay(50);
+        
+        // This runs on the UI thread and blocks it
+        _executionTimes["Sequential"] = ConcurrencyService.RunSequentialDemo(message =>
+        {
+            _demoContainer?.Log(message);
+        });
+
+        _isBusy = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Runs async (non-blocking) demo.
+    /// UI remains responsive during execution.
+    /// </summary>
+    private async Task RunAsync()
+    {
+        _isBusy = true;
+        _demoContainer?.Clear();
+        StateHasChanged();
+
+        _executionTimes["Async"] = await ConcurrencyService.RunAsyncDemo(async message =>
+        {
+            _demoContainer?.Log(message);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        _isBusy = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Runs concurrent (Task.WhenAll) demo.
+    /// All tasks run concurrently for maximum speed.
+    /// </summary>
+    private async Task RunConcurrent()
+    {
+        _isBusy = true;
+        _demoContainer?.Clear();
+        StateHasChanged();
+
+        _executionTimes["Concurrent"] = await ConcurrencyService.RunConcurrentDemo(async message =>
+        {
+            _demoContainer?.Log(message);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        _isBusy = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Runs parallel (CPU-bound) demo.
+    /// Uses multiple threads for true parallelism.
+    /// </summary>
+    private async Task RunParallel()
+    {
+        _isBusy = true;
+        _demoContainer?.Clear();
+        StateHasChanged();
+
+        // Run on threadpool to not block UI
+        long elapsedMs = 0;
+        await Task.Run(() =>
+        {
+            elapsedMs = ConcurrencyService.RunParallelDemo(message =>
+            {
+                InvokeAsync(() =>
+                {
+                    _demoContainer?.Log(message);
+                    StateHasChanged();
+                });
+            }, _maxDegreeOfParallelism);
+        });
+        _executionTimes["Parallel"] = elapsedMs;
+
+        // Small delay to let pending UI updates complete
+        await Task.Delay(100);
+        
+        _isBusy = false;
+        StateHasChanged();
+    }
+
+    private void ClearLog()
+    {
+        _demoContainer?.Clear();
+    }
+}
+
+<style>
+    .demo-page {
+        padding: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .demo-page h1 {
+        color: #00ff88;
+        margin-bottom: 0.5rem;
+    }
+
+    .description {
+        color: #888;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-icon {
+        font-size: 1.1rem;
+    }
+
+    .btn-sequential {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        color: white;
+    }
+
+    .btn-async {
+        background: linear-gradient(135deg, #4ecdc4, #44a39c);
+        color: white;
+    }
+
+    .btn-concurrent {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .btn-parallel {
+        background: linear-gradient(135deg, #a855f7, #9333ea);
+        color: white;
+    }
+
+    .btn-clear {
+        background: #333;
+        color: #ccc;
+    }
+
+    .btn-clear:hover:not(:disabled) {
+        background: #444;
+    }
+
+    .settings-group {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .setting-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .setting-item label {
+        color: #ccc;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .setting-item input[type="range"] {
+        flex: 1;
+        max-width: 200px;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a855f7, #9333ea);
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);
+    }
+
+    .setting-item input[type="range"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .setting-value {
+        min-width: 30px;
+        text-align: center;
+        color: #a855f7;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .comparison-table {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .comparison-table h3 {
+        color: #00ff88;
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+    }
+
+    .comparison-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th {
+        color: #888;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .comparison-table td {
+        color: #ccc;
+    }
+
+    .comparison-table tr.has-value td {
+        color: #fff;
+    }
+
+    .method-icon {
+        margin-right: 0.5rem;
+    }
+
+    .time-cell {
+        font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .time-value {
+        color: #00ff88;
+        font-weight: 600;
+    }
+
+    .not-run {
+        color: #555;
+    }
+
+    .ui-responsive {
+        color: #4ecdc4;
+    }
+
+    .ui-frozen {
+        color: #ff6b6b;
+    }
+
+    .btn-reset {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #888;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-reset:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.05);
+        color: #ccc;
+        transform: none;
+        box-shadow: none;
+    }
+</style>

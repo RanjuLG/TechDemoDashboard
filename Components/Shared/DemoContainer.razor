@@ -1,0 +1,106 @@
+@namespace Demo_C_.Components.Shared
+
+<div class="demo-container">
+    <div class="demo-header">
+        <h3>@Title</h3>
+        @if (IsBusy)
+        {
+            <div class="spinner"></div>
+        }
+    </div>
+    
+    <div class="log-output" @ref="logOutputRef">
+        @foreach (var line in _logLines)
+        {
+            <div class="log-line">@line</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Demo";
+
+    [Parameter]
+    public bool IsBusy { get; set; }
+
+    private ElementReference logOutputRef;
+    private List<string> _logLines = new();
+
+    /// <summary>
+    /// Adds a message to the log output window.
+    /// Call this from parent components using @ref.
+    /// </summary>
+    public void Log(string message)
+    {
+        _logLines.Add($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Clears all log messages.
+    /// </summary>
+    public void Clear()
+    {
+        _logLines.Clear();
+        StateHasChanged();
+    }
+}
+
+<style>
+    .demo-container {
+        border: 1px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #1a1a2e;
+        margin-bottom: 1rem;
+    }
+
+    .demo-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        background: #16213e;
+        border-bottom: 1px solid #333;
+    }
+
+    .demo-header h3 {
+        margin: 0;
+        color: #00ff88;
+        font-size: 1.1rem;
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #333;
+        border-top-color: #00ff88;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .log-output {
+        background: #0a0a0a;
+        color: #00ff88;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.85rem;
+        padding: 1rem;
+        min-height: 200px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .log-line {
+        margin-bottom: 0.25rem;
+        line-height: 1.4;
+    }
+
+    .log-line:empty {
+        height: 0.5rem;
+    }
+</style>
