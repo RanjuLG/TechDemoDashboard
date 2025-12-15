@@ -1,5 +1,6 @@
 @page "/demos/oop"
 @using Demo_C_.Models
+@using Demo_C_.Services
 @rendermode InteractiveServer
 
 <PageTitle>OOP Demo - Battle Arena</PageTitle>
@@ -215,75 +216,27 @@ mage.Attack();    // Fireball</code></pre>
 </div>
 
 @code {
-    private Hero? _selectedHero;
-    private string _lastAction = "";
-    private string _lastSound = "";
-    private int _lastDamage;
-    private string _encapsulationResult = "";
+    [Inject]
+    private OOPDemoService Service { get; set; } = default!;
 
-    private void SelectHero(Hero hero)
-    {
-        _selectedHero = hero;
-        _lastAction = $"{hero.Name} the {hero.Class} enters the arena!";
-        _lastSound = "🎺";
-        _lastDamage = 0;
-    }
+    // Convenience properties for cleaner markup
+    private Hero? _selectedHero => Service.SelectedHero;
+    private string _lastAction => Service.LastAction;
+    private string _lastSound => Service.LastSound;
+    private int _lastDamage => Service.LastDamage;
+    private string _encapsulationResult => Service.EncapsulationResult;
 
-    private void SelectWarrior() => SelectHero(new Warrior("Ragnar"));
-    private void SelectMage() => SelectHero(new Mage("Ravana"));
-    private void SelectRogue() => SelectHero(new Rogue("Shadow"));
-
-    private void ChangeHero()
-    {
-        _selectedHero = null;
-        _lastAction = "";
-        _lastSound = "";
-        _encapsulationResult = "";
-    }
-
-    private void PerformAttack()
-    {
-        if (_selectedHero == null || !_selectedHero.IsAlive) return;
-        
-        var (message, sound, damage) = _selectedHero.Attack();
-        _lastAction = message;
-        _lastSound = sound;
-        _lastDamage = damage;
-    }
-
-    private void DealDamage(int amount)
-    {
-        if (_selectedHero == null) return;
-        _selectedHero.TakeDamage(amount);
-        _lastAction = $"{_selectedHero.Name} takes {amount} damage!";
-        _lastSound = "💥";
-        _lastDamage = 0;
-    }
-
-    private void HealHero(int amount)
-    {
-        if (_selectedHero == null) return;
-        _selectedHero.Heal(amount);
-        _lastAction = $"{_selectedHero.Name} heals!";
-        _lastSound = "💚";
-        _lastDamage = 0;
-    }
-
-    private void TryInvalidHealth()
-    {
-        if (_selectedHero == null) return;
-        _encapsulationResult = _selectedHero.AttemptInvalidHealth(-100);
-    }
-
-    private void ResetHero()
-    {
-        if (_selectedHero == null) return;
-        _selectedHero.ResetHealth();
-        _lastAction = $"{_selectedHero.Name} is ready for battle!";
-        _lastSound = "🔄";
-        _lastDamage = 0;
-        _encapsulationResult = "";
-    }
+    // Delegate all methods to the service
+    private void SelectHero(Hero hero) => Service.SelectHero(hero);
+    private void SelectWarrior() => Service.SelectWarrior();
+    private void SelectMage() => Service.SelectMage();
+    private void SelectRogue() => Service.SelectRogue();
+    private void ChangeHero() => Service.ChangeHero();
+    private void PerformAttack() => Service.PerformAttack();
+    private void DealDamage(int amount) => Service.DealDamage(amount);
+    private void HealHero(int amount) => Service.HealHero(amount);
+    private void TryInvalidHealth() => Service.TryInvalidHealth();
+    private void ResetHero() => Service.ResetHero();
 }
 
 <style>

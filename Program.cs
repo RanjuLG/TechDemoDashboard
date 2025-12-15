@@ -19,6 +19,10 @@ builder.Services.AddSingleton<SingletonService>();
 // Register Race Condition demo service (Singleton to persist state)
 builder.Services.AddSingleton<TicketService>();
 
+// Register OOP and SOLID demo services (Scoped for per-request state)
+builder.Services.AddScoped<OOPDemoService>();
+builder.Services.AddScoped<SOLIDDemoService>();
+
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();
 

@@ -1,5 +1,6 @@
 @page "/demos/solid"
 @using Demo_C_.Models.SOLID
+@using Demo_C_.Services
 @rendermode InteractiveServer
 
 <PageTitle>SOLID Principles Demo</PageTitle>
@@ -42,6 +43,9 @@
 </div>
 
 @code {
+    [Inject]
+    private SOLIDDemoService Service { get; set; } = default!;
+
     private string ActiveTab = "SRP";
 
     private void SetTabSRP() => ActiveTab = "SRP";
@@ -53,183 +57,52 @@
 
 @* ========== SRP DEMO ========== *@
 @code {
-    // SRP Demo State
-    private BadNotificationService _badService = new();
-    private DataSaver _saver = new();
-    private EmailSender _emailer = new();
-    private string _srpResult = "";
-    private List<string> _srpLog = new();
-
-    private void BadSaveAndEmail()
-    {
-        _badService = new();
-        _srpResult = _badService.SaveAndEmail("User Profile", "user@example.com");
-        _srpLog = _badService.Log.ToList();
-    }
-
-    private void GoodSave()
-    {
-        _saver = new();
-        _srpResult = _saver.Save("User Profile");
-        _srpLog = _saver.Log.ToList();
-    }
-
-    private void GoodEmail()
-    {
-        _emailer = new();
-        _srpResult = _emailer.Send("user@example.com", "Profile Updated");
-        _srpLog = _emailer.Log.ToList();
-    }
+    // SRP - Delegate to service
+    private string _srpResult => Service.SrpResult;
+    private List<string> _srpLog => Service.SrpLog;
+    private void BadSaveAndEmail() => Service.BadSaveAndEmail();
+    private void GoodSave() => Service.GoodSave();
+    private void GoodEmail() => Service.GoodEmail();
 }
 
 @* ========== OCP DEMO ========== *@
 @code {
-    private NotificationSender _notifSender = new();
-    private string _selectedMessageType = "Email";
-    private string _ocpResult = "";
-
-    private void SendNotification()
-    {
-        _notifSender = new();
-        IMessage message = _selectedMessageType switch
-        {
-            "Email" => new EmailMessage { To = "user@example.com", Subject = "Hello!" },
-            "SMS" => new SmsMessage { PhoneNumber = "+1234567890", Text = "Hello!" },
-            "Push" => new PushMessage { DeviceId = "device-123", Title = "New Alert" },
-            "Slack" => new SlackMessage { Channel = "general", Text = "Hello team!" },
-            _ => new EmailMessage { To = "user@example.com", Subject = "Hello!" }
-        };
-        _ocpResult = _notifSender.SendNotification(message);
-    }
+    // OCP - Delegate to service
+    private string _selectedMessageType { get => Service.SelectedMessageType; set => Service.SelectedMessageType = value; }
+    private string _ocpResult => Service.OcpResult;
+    private void SendNotification() => Service.SendNotification();
 }
 
 @* ========== LSP DEMO ========== *@
 @code {
-    private List<string> _lspResults = new();
-    private bool _lspCrashed;
-    private string _lspError = "";
-
-    private void LaunchBadBirds()
-    {
-        _lspResults.Clear();
-        _lspCrashed = false;
-        _lspError = "";
-
-        List<Bird> birds = new() { new Duck(), new Eagle(), new Penguin() };
-        
-        foreach (var bird in birds)
-        {
-            try
-            {
-                _lspResults.Add(bird.Fly());
-            }
-            catch (NotSupportedException ex)
-            {
-                _lspCrashed = true;
-                _lspError = ex.Message;
-                _lspResults.Add($"💥 {bird.Name}: CRASHED!");
-                break;
-            }
-        }
-    }
-
-    private void LaunchGoodBirds()
-    {
-        _lspResults.Clear();
-        _lspCrashed = false;
-        _lspError = "";
-
-        // Only IFlyable objects - Penguin simply can't be in this list!
-        List<IFlyable> flyables = new() { new FlyingDuck(), new FlyingEagle() };
-        
-        foreach (var flyable in flyables)
-        {
-            _lspResults.Add(flyable.Fly());
-        }
-        _lspResults.Add("✅ All flights successful! Penguin couldn't be added to this list.");
-    }
+    // LSP - Delegate to service
+    private List<string> _lspResults => Service.LspResults;
+    private bool _lspCrashed => Service.LspCrashed;
+    private string _lspError => Service.LspError;
+    private void LaunchBadBirds() => Service.LaunchBadBirds();
+    private void LaunchGoodBirds() => Service.LaunchGoodBirds();
 }
 
 @* ========== ISP DEMO ========== *@
 @code {
-    private string _selectedPrinter = "Xerox";
-    private string _ispResult = "";
-    private bool _ispCrashed;
-    private string _ispError = "";
-
-    private IMultiFunctionDevice GetSelectedDevice() => 
-        _selectedPrinter == "Xerox" ? new ModernXerox() : new OldHPPrinter();
-
-    private void DoPrint()
-    {
-        _ispCrashed = false;
-        _ispError = "";
-        try
-        {
-            _ispResult = GetSelectedDevice().Print("Important Document.pdf");
-        }
-        catch (NotSupportedException ex)
-        {
-            _ispCrashed = true;
-            _ispError = ex.Message;
-        }
-    }
-
-    private void DoScan()
-    {
-        _ispCrashed = false;
-        _ispError = "";
-        try
-        {
-            _ispResult = GetSelectedDevice().Scan();
-        }
-        catch (NotSupportedException ex)
-        {
-            _ispCrashed = true;
-            _ispError = ex.Message;
-        }
-    }
-
-    private void DoFax()
-    {
-        _ispCrashed = false;
-        _ispError = "";
-        try
-        {
-            _ispResult = GetSelectedDevice().Fax("+1-555-0123");
-        }
-        catch (NotSupportedException ex)
-        {
-            _ispCrashed = true;
-            _ispError = ex.Message;
-        }
-    }
+    // ISP - Delegate to service
+    private string _selectedPrinter { get => Service.SelectedPrinter; set => Service.SelectedPrinter = value; }
+    private string _ispResult => Service.IspResult;
+    private bool _ispCrashed => Service.IspCrashed;
+    private string _ispError => Service.IspError;
+    private void DoPrint() => Service.DoPrint();
+    private void DoScan() => Service.DoScan();
+    private void DoFax() => Service.DoFax();
 }
 
 @* ========== DIP DEMO ========== *@
 @code {
-    private SmartHomeSwitch _smartSwitch = new();
-    private string _selectedDevice = "Light";
-    private string _dipResult = "";
-
-    private void ConnectDevice()
-    {
-        _smartSwitch = new();
-        ISwitchable device = _selectedDevice switch
-        {
-            "Light" => new LightBulb(),
-            "Fan" => new CeilingFan(),
-            "Coffee" => new CoffeeMachine(),
-            _ => new LightBulb()
-        };
-        _smartSwitch.ConnectDevice(device);
-        _dipResult = $"Connected to {device.Name}";
-    }
-
-    private void ToggleDevice()
-    {
-        _dipResult = _smartSwitch.Toggle();
-    }
+    // DIP - Delegate to service
+    private string _selectedDevice { get => Service.SelectedDevice; set => Service.SelectedDevice = value; }
+    private string _dipResult => Service.DipResult;
+    private SmartHomeSwitch _smartSwitch => Service.SmartSwitch;
+    private void ConnectDevice() => Service.ConnectDevice();
+    private void ToggleDevice() => Service.ToggleDevice();
 }
 
 @* ========== COMPONENT DEFINITIONS ========== *@
@@ -311,12 +184,12 @@
             </div>
         </div>
 
-        @if (_notifSender.Log.Any())
+        @if (Service.NotifSenderLog.Any())
         {
             <div class="result-panel success">
                 <h4>Result: @_ocpResult</h4>
                 <div class="log">
-                    @foreach (var entry in _notifSender.Log)
+                    @foreach (var entry in Service.NotifSenderLog)
                     {
                         <div>@entry</div>
                     }
