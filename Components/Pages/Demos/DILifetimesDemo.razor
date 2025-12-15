@@ -10,151 +10,192 @@
 
 <PageTitle>DI Lifetimes Demo</PageTitle>
 
-<div class="demo-page">
-    <h1>💉 DI Lifetimes Visualizer</h1>
-    <p class="description">
-        Understand the difference between Transient, Scoped, and Singleton service lifetimes.
-        Each service generates a unique GUID when instantiated. Watch how they behave differently!
-    </p>
+<div class="min-vh-100 bg-dark-custom p-4">
+    <div class="container-fluid" style="max-width: 1200px;">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-primary-custom mb-2">
+                <span class="me-2">💉</span>DI Lifetimes Visualizer
+            </h1>
+            <p class="text-secondary-custom">
+                Understand the difference between Transient, Scoped, and Singleton service lifetimes.
+                Each service generates a unique GUID when instantiated. Watch how they behave differently!
+            </p>
+        </div>
 
-    <div class="interview-question">
-        <span class="label">🎯 Interview Question:</span>
-        <span class="question">"What is the difference between Scoped and Transient services?"</span>
-    </div>
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <span class="fw-bold">🎯 Interview Question:</span>
+            <span class="fst-italic">"What is the difference between Scoped and Transient services?"</span>
+        </div>
 
-    <div class="controls">
-        <button class="btn btn-refresh" @onclick="RefreshPage">
-            🔄 Refresh Page
-        </button>
-        <span class="refresh-hint">Click to see how each lifetime behaves on refresh</span>
-    </div>
+        <!-- Controls -->
+        <div class="mb-4">
+            <button class="btn btn-primary" @onclick="RefreshPage">
+                <span class="me-1">🔄</span> Refresh Page
+            </button>
+            <span class="ms-3 text-secondary-custom small">Click to see how each lifetime behaves on refresh</span>
+        </div>
 
-    <div class="lifetime-grid">
-        <!-- Transient -->
-        <div class="lifetime-card transient">
-            <div class="card-header">
-                <span class="lifetime-icon">🔄</span>
-                <h3>Transient</h3>
-                <span class="lifetime-badge">New instance every time</span>
-            </div>
-            <div class="card-content">
-                <p class="lifetime-desc">A new instance is created <strong>every time</strong> the service is requested.</p>
-                <div class="instance-row">
-                    <div class="instance">
-                        <span class="instance-label">Injection 1:</span>
-                        <code class="guid">@Transient1.InstanceId.ToString()[..8]...</code>
+        <!-- Lifetime Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Transient -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-danger">
+                    <div class="card-header bg-danger bg-opacity-10 border-bottom border-danger">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-4">🔄</span>
+                                <h3 class="h5 mb-0 text-danger">Transient</h3>
+                            </div>
+                            <span class="badge bg-danger bg-opacity-25 text-danger">New instance every time</span>
+                        </div>
                     </div>
-                    <div class="instance">
-                        <span class="instance-label">Injection 2:</span>
-                        <code class="guid">@Transient2.InstanceId.ToString()[..8]...</code>
+                    <div class="card-body">
+                        <p class="text-secondary-custom small mb-3">
+                            A new instance is created <strong class="text-white">every time</strong> the service is requested.
+                        </p>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 1:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Transient1.InstanceId.ToString()[..8]...</code>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 2:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Transient2.InstanceId.ToString()[..8]...</code>
+                            </div>
+                        </div>
+                        <div class="alert @(Transient1.InstanceId == Transient2.InstanceId ? "alert-success" : "alert-danger") py-2 mb-0 text-center">
+                            @if (Transient1.InstanceId == Transient2.InstanceId)
+                            {
+                                <span>✅ Same instance</span>
+                            }
+                            else
+                            {
+                                <span>❌ Different instances</span>
+                            }
+                        </div>
                     </div>
                 </div>
-                <div class="comparison @(Transient1.InstanceId == Transient2.InstanceId ? "same" : "different")">
-                    @if (Transient1.InstanceId == Transient2.InstanceId)
-                    {
-                        <span>✅ Same instance</span>
-                    }
-                    else
-                    {
-                        <span>❌ Different instances</span>
-                    }
+            </div>
+
+            <!-- Scoped -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-info">
+                    <div class="card-header bg-info bg-opacity-10 border-bottom border-info">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-4">📦</span>
+                                <h3 class="h5 mb-0 text-info">Scoped</h3>
+                            </div>
+                            <span class="badge bg-info bg-opacity-25 text-info">One per request</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-secondary-custom small mb-3">
+                            One instance per <strong class="text-white">HTTP request/scope</strong>. Same within request, different across requests.
+                        </p>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 1:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Scoped1.InstanceId.ToString()[..8]...</code>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 2:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Scoped2.InstanceId.ToString()[..8]...</code>
+                            </div>
+                        </div>
+                        <div class="alert @(Scoped1.InstanceId == Scoped2.InstanceId ? "alert-success" : "alert-danger") py-2 mb-0 text-center">
+                            @if (Scoped1.InstanceId == Scoped2.InstanceId)
+                            {
+                                <span>✅ Same instance (within this request)</span>
+                            }
+                            else
+                            {
+                                <span>❌ Different instances</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Singleton -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-warning">
+                    <div class="card-header bg-warning bg-opacity-10 border-bottom border-warning">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-4">🌐</span>
+                                <h3 class="h5 mb-0 text-warning">Singleton</h3>
+                            </div>
+                            <span class="badge bg-warning bg-opacity-25 text-warning">One for all</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-secondary-custom small mb-3">
+                            One instance for the <strong class="text-white">entire application lifetime</strong>. Never changes.
+                        </p>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 1:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Singleton1.InstanceId.ToString()[..8]...</code>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted" style="min-width: 80px;">Injection 2:</span>
+                                <code class="flex-grow-1 bg-dark p-2 rounded text-primary-custom small">@Singleton2.InstanceId.ToString()[..8]...</code>
+                            </div>
+                        </div>
+                        <div class="alert @(Singleton1.InstanceId == Singleton2.InstanceId ? "alert-success" : "alert-danger") py-2 mb-0 text-center">
+                            @if (Singleton1.InstanceId == Singleton2.InstanceId)
+                            {
+                                <span>✅ Same instance (always!)</span>
+                            }
+                            else
+                            {
+                                <span>❌ Different instances</span>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Scoped -->
-        <div class="lifetime-card scoped">
+        <!-- Summary Table -->
+        <div class="card">
             <div class="card-header">
-                <span class="lifetime-icon">📦</span>
-                <h3>Scoped</h3>
-                <span class="lifetime-badge">One per request</span>
+                <h3 class="h6 mb-0 fw-bold">📖 Key Takeaways</h3>
             </div>
-            <div class="card-content">
-                <p class="lifetime-desc">One instance per <strong>HTTP request/scope</strong>. Same within request, different across requests.</p>
-                <div class="instance-row">
-                    <div class="instance">
-                        <span class="instance-label">Injection 1:</span>
-                        <code class="guid">@Scoped1.InstanceId.ToString()[..8]...</code>
-                    </div>
-                    <div class="instance">
-                        <span class="instance-label">Injection 2:</span>
-                        <code class="guid">@Scoped2.InstanceId.ToString()[..8]...</code>
-                    </div>
-                </div>
-                <div class="comparison @(Scoped1.InstanceId == Scoped2.InstanceId ? "same" : "different")">
-                    @if (Scoped1.InstanceId == Scoped2.InstanceId)
-                    {
-                        <span>✅ Same instance (within this request)</span>
-                    }
-                    else
-                    {
-                        <span>❌ Different instances</span>
-                    }
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Lifetime</th>
+                                <th>Created When</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-danger">Transient</span></td>
+                                <td>Every injection</td>
+                                <td>Lightweight, stateless services</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-info">Scoped</span></td>
+                                <td>Once per request</td>
+                                <td>DbContext, per-request state</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning text-dark">Singleton</span></td>
+                                <td>Once per app</td>
+                                <td>Caches, configuration, logging</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <!-- Singleton -->
-        <div class="lifetime-card singleton">
-            <div class="card-header">
-                <span class="lifetime-icon">🌐</span>
-                <h3>Singleton</h3>
-                <span class="lifetime-badge">One for all</span>
-            </div>
-            <div class="card-content">
-                <p class="lifetime-desc">One instance for the <strong>entire application lifetime</strong>. Never changes.</p>
-                <div class="instance-row">
-                    <div class="instance">
-                        <span class="instance-label">Injection 1:</span>
-                        <code class="guid">@Singleton1.InstanceId.ToString()[..8]...</code>
-                    </div>
-                    <div class="instance">
-                        <span class="instance-label">Injection 2:</span>
-                        <code class="guid">@Singleton2.InstanceId.ToString()[..8]...</code>
-                    </div>
-                </div>
-                <div class="comparison @(Singleton1.InstanceId == Singleton2.InstanceId ? "same" : "different")">
-                    @if (Singleton1.InstanceId == Singleton2.InstanceId)
-                    {
-                        <span>✅ Same instance (always!)</span>
-                    }
-                    else
-                    {
-                        <span>❌ Different instances</span>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="info-panel">
-        <h3>📖 Key Takeaways</h3>
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Lifetime</th>
-                    <th>Created When</th>
-                    <th>Use Case</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="badge transient">Transient</span></td>
-                    <td>Every injection</td>
-                    <td>Lightweight, stateless services</td>
-                </tr>
-                <tr>
-                    <td><span class="badge scoped">Scoped</span></td>
-                    <td>Once per request</td>
-                    <td>DbContext, per-request state</td>
-                </tr>
-                <tr>
-                    <td><span class="badge singleton">Singleton</span></td>
-                    <td>Once per app</td>
-                    <td>Caches, configuration, logging</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>
 
@@ -169,250 +210,20 @@
 }
 
 <style>
-    .demo-page {
-        padding: 1.5rem;
-        max-width: 1000px;
-        margin: 0 auto;
+    .table-dark {
+        --bs-table-bg: transparent;
+        --bs-table-border-color: var(--border-color);
     }
-
-    .demo-page h1 {
-        color: #00ff88;
-        margin-bottom: 0.5rem;
-    }
-
-    .description {
-        color: #888;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-    }
-
-    .interview-question {
-        background: rgba(168, 85, 247, 0.15);
-        border: 1px solid rgba(168, 85, 247, 0.3);
-        border-radius: 8px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .interview-question .label {
-        color: #a855f7;
+    
+    .table-dark th {
+        color: var(--text-secondary);
         font-weight: 600;
-        margin-right: 0.5rem;
-    }
-
-    .interview-question .question {
-        color: #ccc;
-        font-style: italic;
-    }
-
-    .controls {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .btn-refresh {
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #4ecdc4, #44a39c);
-        border: none;
-        border-radius: 6px;
-        color: #1a1a2e;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-refresh:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
-    }
-
-    .refresh-hint {
-        color: #666;
-        font-size: 0.85rem;
-    }
-
-    .lifetime-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .lifetime-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .card-header {
-        padding: 1rem 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-    }
-
-    .lifetime-icon {
-        font-size: 1.5rem;
-    }
-
-    .card-header h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        flex: 1;
-    }
-
-    .lifetime-badge {
+        text-transform: uppercase;
         font-size: 0.75rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        background: rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.5px;
     }
-
-    .lifetime-card.transient .card-header {
-        background: rgba(255, 107, 107, 0.15);
-        border-bottom: 2px solid #ff6b6b;
-    }
-
-    .lifetime-card.transient .card-header h3 { color: #ff6b6b; }
-    .lifetime-card.transient .lifetime-badge { color: #ff6b6b; }
-
-    .lifetime-card.scoped .card-header {
-        background: rgba(78, 205, 196, 0.15);
-        border-bottom: 2px solid #4ecdc4;
-    }
-
-    .lifetime-card.scoped .card-header h3 { color: #4ecdc4; }
-    .lifetime-card.scoped .lifetime-badge { color: #4ecdc4; }
-
-    .lifetime-card.singleton .card-header {
-        background: rgba(168, 85, 247, 0.15);
-        border-bottom: 2px solid #a855f7;
-    }
-
-    .lifetime-card.singleton .card-header h3 { color: #a855f7; }
-    .lifetime-card.singleton .lifetime-badge { color: #a855f7; }
-
-    .card-content {
-        padding: 1.25rem;
-    }
-
-    .lifetime-desc {
-        color: #888;
-        font-size: 0.9rem;
-        margin: 0 0 1rem 0;
-        line-height: 1.5;
-    }
-
-    .lifetime-desc strong {
-        color: #ccc;
-    }
-
-    .instance-row {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .instance {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .instance-label {
-        color: #666;
-        font-size: 0.85rem;
-        min-width: 80px;
-    }
-
-    .guid {
-        background: #1a1a2e;
-        padding: 0.5rem 0.75rem;
-        border-radius: 4px;
-        font-family: 'Consolas', monospace;
-        font-size: 0.9rem;
-        color: #00ff88;
-        flex: 1;
-    }
-
-    .comparison {
-        text-align: center;
-        padding: 0.5rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .comparison.same {
-        background: rgba(0, 255, 136, 0.15);
-        color: #00ff88;
-    }
-
-    .comparison.different {
-        background: rgba(255, 107, 107, 0.15);
-        color: #ff6b6b;
-    }
-
-    .info-panel {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 1.25rem;
-    }
-
-    .info-panel h3 {
-        color: #00ff88;
-        margin: 0 0 1rem 0;
-        font-size: 1rem;
-    }
-
-    .summary-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .summary-table th,
-    .summary-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .summary-table th {
-        color: #888;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-
-    .summary-table td {
-        color: #ccc;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    .badge.transient {
-        background: rgba(255, 107, 107, 0.2);
-        color: #ff6b6b;
-    }
-
-    .badge.scoped {
-        background: rgba(78, 205, 196, 0.2);
-        color: #4ecdc4;
-    }
-
-    .badge.singleton {
-        background: rgba(168, 85, 247, 0.2);
-        color: #a855f7;
+    
+    .table-dark td {
+        color: var(--text-primary);
     }
 </style>

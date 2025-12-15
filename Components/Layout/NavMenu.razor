@@ -1,65 +1,95 @@
 <!-- Sidebar Header -->
-<div class="p-3 border-bottom border-secondary">
-    <a href="/" class="d-flex align-items-center text-white text-decoration-none">
-        <span class="fs-5 me-2">⚡</span>
-        <span class="fs-5 fw-semibold">Tech Demos</span>
+<div class="p-4 border-bottom border-secondary">
+    <a href="/" class="d-flex align-items-center text-decoration-none">
+        <span class="fs-4 me-2">⚡</span>
+        <span class="fs-4 fw-bold text-white">Tech Demos</span>
     </a>
 </div>
 
 <!-- Navigation -->
-<nav class="nav flex-column p-3">
-    <p class="text-secondary text-uppercase small fw-bold mb-2 ps-2">Main</p>
-    
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="" Match="NavLinkMatch.All">
-        <span class="me-2">🏠</span> Home
-    </NavLink>
+<nav class="flex-grow-1 p-3">
+    <!-- Main Section -->
+    <div class="mb-4">
+        <p class="text-uppercase small fw-bold text-secondary mb-2 px-2" style="letter-spacing: 0.5px;">Main</p>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="" Match="NavLinkMatch.All">
+            <span class="me-2">🏠</span>
+            <span>Home</span>
+        </NavLink>
+    </div>
 
-    <p class="text-secondary text-uppercase small fw-bold mb-2 mt-3 ps-2">Demos</p>
-    
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/concurrency">
-        <span class="me-2">🧵</span> Concurrency
-    </NavLink>
+    <!-- Demos Section -->
+    <div>
+        <p class="text-uppercase small fw-bold text-secondary mb-2 px-2" style="letter-spacing: 0.5px;">Demos</p>
+        
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/concurrency">
+            <span class="me-2">🧵</span>
+            <span>Concurrency</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/signalr">
-        <span class="me-2">📡</span> SignalR Realtime
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/signalr">
+            <span class="me-2">📡</span>
+            <span>SignalR Realtime</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/di-lifetimes">
-        <span class="me-2">💉</span> DI Lifetimes
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/di-lifetimes">
+            <span class="me-2">💉</span>
+            <span>DI Lifetimes</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/race-condition">
-        <span class="me-2">🔒</span> Race Condition
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/race-condition">
+            <span class="me-2">🔒</span>
+            <span>Race Condition</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/oop">
-        <span class="me-2">⚔️</span> OOP Battle Arena
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/oop">
+            <span class="me-2">⚔️</span>
+            <span>OOP Battle Arena</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/solid">
-        <span class="me-2">🏗️</span> SOLID Principles
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/solid">
+            <span class="me-2">🏗️</span>
+            <span>SOLID Principles</span>
+        </NavLink>
 
-    <NavLink class="nav-link text-white rounded px-3 py-2 mb-1" href="demos/delegates-events">
-        <span class="me-2">📊</span> Delegates & Events
-    </NavLink>
+        <NavLink class="nav-link-custom d-flex align-items-center text-white rounded px-3 py-2 mb-1" href="demos/delegates-events">
+            <span class="me-2">📊</span>
+            <span>Delegates & Events</span>
+        </NavLink>
+    </div>
 </nav>
 
 <!-- Footer -->
-<div class="mt-auto p-3 border-top border-secondary">
-    <small class="text-secondary d-block mb-1">.NET 8 Blazor</small>
-    <small class="text-secondary">
-        Designed and developed by <a href="https://ranjugamage.dev" target="_blank" class="text-decoration-none text-info">Ranju Gamage</a>
+<div class="mt-auto p-4 border-top border-secondary">
+    <div class="mb-2">
+        <span class="badge bg-secondary">.NET 8 Blazor</span>
+    </div>
+    <small class="text-secondary d-block">
+        Designed by <a href="https://ranjugamage.dev" target="_blank" class="text-decoration-none text-primary-custom">Ranju Gamage</a>
     </small>
 </div>
 
 <style>
-    .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
+    .nav-link-custom {
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        border: 1px solid transparent;
     }
     
-    .nav-link.active {
-        background-color: rgba(0, 255, 136, 0.15) !important;
-        color: #00ff88 !important;
+    .nav-link-custom:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(2px);
+    }
+    
+    .nav-link-custom.active {
+        background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05)) !important;
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color) !important;
+        font-weight: 600;
+    }
+    
+    .nav-link-custom.active span:not(.me-2) {
+        color: var(--primary-color);
     }
 </style>

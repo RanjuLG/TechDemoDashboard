@@ -5,85 +5,102 @@
 
 <PageTitle>SignalR Demo</PageTitle>
 
-<div class="demo-page">
-    <h1>📡 SignalR Real-time Demo</h1>
-    <p class="description">
-        Experience real-time communication with SignalR. Open this page in multiple browser tabs
-        to see messages appear instantly across all connected clients.
-    </p>
+<div class="min-vh-100 bg-dark-custom p-4">
+    <div class="container-fluid" style="max-width: 1000px;">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-primary-custom mb-2">
+                <span class="me-2">📡</span>SignalR Real-time Demo
+            </h1>
+            <p class="text-secondary-custom">
+                Experience real-time communication with SignalR. Open this page in multiple browser tabs
+                to see messages appear instantly across all connected clients.
+            </p>
+        </div>
 
-    <div class="connection-status @(_isConnected ? "connected" : "disconnected")">
-        <span class="status-icon">@(_isConnected ? "🟢" : "🔴")</span>
-        <span>@(_isConnected ? "Connected" : "Disconnected")</span>
-        @if (!_isConnected)
-        {
-            <button class="btn-reconnect" @onclick="Connect" disabled="@_isConnecting">
-                @(_isConnecting ? "Connecting..." : "Reconnect")
-            </button>
-        }
-    </div>
-
-    <div class="chat-container">
-        <div class="user-input-section">
-            <div class="input-group">
-                <label for="username">Your Name:</label>
-                <input type="text" id="username" @bind="_userName" placeholder="Enter your name..." 
-                       disabled="@(!_isConnected)" />
-            </div>
-            
-            <div class="input-group message-input">
-                <label for="message">Message:</label>
-                <div class="message-row">
-                    <input type="text" id="message" @bind="_messageInput" 
-                           @onkeypress="HandleKeyPress" placeholder="Type a message..."
-                           disabled="@(!_isConnected || string.IsNullOrWhiteSpace(_userName))" />
-                    <button class="btn btn-send" @onclick="SendMessage" 
-                            disabled="@(!_isConnected || string.IsNullOrWhiteSpace(_userName) || string.IsNullOrWhiteSpace(_messageInput))">
-                        Send 📤
+        <!-- Connection Status -->
+        <div class="mb-4">
+            <div class="alert @(_isConnected ? "alert-success" : "alert-danger") d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-5">@(_isConnected ? "🟢" : "🔴")</span>
+                    <span class="fw-bold">@(_isConnected ? "Connected" : "Disconnected")</span>
+                </div>
+                @if (!_isConnected)
+                {
+                    <button class="btn btn-sm btn-outline-light" @onclick="Connect" disabled="@_isConnecting">
+                        @(_isConnecting ? "Connecting..." : "Reconnect")
                     </button>
+                }
+            </div>
+        </div>
+
+        <!-- User Input -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="username" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="username" @bind="_userName" 
+                               placeholder="Enter your name..." disabled="@(!_isConnected)" />
+                    </div>
+                    <div class="col-md-8">
+                        <label for="message" class="form-label">Message</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="message" @bind="_messageInput" 
+                                   @onkeypress="HandleKeyPress" placeholder="Type a message..."
+                                   disabled="@(!_isConnected || string.IsNullOrWhiteSpace(_userName))" />
+                            <button class="btn btn-primary" @onclick="SendMessage" 
+                                    disabled="@(!_isConnected || string.IsNullOrWhiteSpace(_userName) || string.IsNullOrWhiteSpace(_messageInput))">
+                                Send 📤
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="messages-section">
-            <div class="messages-header">
-                <h3>💬 Messages</h3>
-                <span class="message-count">@_messages.Count messages</span>
+        <!-- Messages -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="h6 mb-0 fw-bold">💬 Messages</h3>
+                <span class="badge bg-secondary">@_messages.Count messages</span>
             </div>
-            
-            <div class="messages-list">
-                @if (_messages.Count == 0)
-                {
-                    <div class="no-messages">
-                        <span>📭</span>
-                        <p>No messages yet. Be the first to send one!</p>
-                    </div>
-                }
-                else
-                {
-                    @foreach (var msg in _messages.AsEnumerable().Reverse())
+            <div class="card-body p-0">
+                <div class="p-3" style="max-height: 400px; overflow-y: auto;">
+                    @if (_messages.Count == 0)
                     {
-                        <div class="message @(msg.User == _userName ? "own-message" : "")">
-                            <div class="message-header">
-                                <span class="message-user">@msg.User</span>
-                                <span class="message-time">@msg.Timestamp.ToString("HH:mm:ss")</span>
-                            </div>
-                            <div class="message-content">@msg.Content</div>
+                        <div class="text-center text-muted py-5">
+                            <div class="fs-1 mb-2">📭</div>
+                            <p class="mb-0">No messages yet. Be the first to send one!</p>
                         </div>
                     }
-                }
+                    else
+                    {
+                        @foreach (var msg in _messages.AsEnumerable().Reverse())
+                        {
+                            <div class="mb-3 p-3 rounded @(msg.User == _userName ? "bg-success bg-opacity-10 border-start border-success border-3" : "bg-secondary bg-opacity-10")">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold @(msg.User == _userName ? "text-primary-custom" : "text-info")">@msg.User</span>
+                                    <span class="small text-muted font-monospace">@msg.Timestamp.ToString("HH:mm:ss")</span>
+                                </div>
+                                <div class="text-white-50">@msg.Content</div>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="info-panel">
-        <h3>📖 How it works</h3>
-        <ul>
-            <li><strong>WebSocket Connection:</strong> SignalR establishes a persistent connection for instant communication</li>
-            <li><strong>Hub Pattern:</strong> The server-side ChatHub broadcasts messages to all connected clients</li>
-            <li><strong>Real-time Updates:</strong> No page refresh needed - messages appear instantly</li>
-        </ul>
-        <p class="tip">💡 <strong>Tip:</strong> Open this page in another tab or browser to see real-time sync in action!</p>
+        <!-- Info Panel -->
+        <div class="alert alert-info">
+            <h3 class="h6 fw-bold mb-2">📖 How it works</h3>
+            <ul class="mb-2 small">
+                <li><strong>WebSocket Connection:</strong> SignalR establishes a persistent connection for instant communication</li>
+                <li><strong>Hub Pattern:</strong> The server-side ChatHub broadcasts messages to all connected clients</li>
+                <li><strong>Real-time Updates:</strong> No page refresh needed - messages appear instantly</li>
+            </ul>
+            <p class="mb-0 small"><strong>💡 Tip:</strong> Open this page in another tab or browser to see real-time sync in action!</p>
+        </div>
     </div>
 </div>
 
@@ -175,255 +192,3 @@
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
 }
-
-<style>
-    .demo-page {
-        padding: 1.5rem;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .demo-page h1 {
-        color: #00ff88;
-        margin-bottom: 0.5rem;
-    }
-
-    .description {
-        color: #888;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-    }
-
-    .connection-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .connection-status.connected {
-        background: rgba(0, 255, 136, 0.15);
-        color: #00ff88;
-    }
-
-    .connection-status.disconnected {
-        background: rgba(255, 107, 107, 0.15);
-        color: #ff6b6b;
-    }
-
-    .btn-reconnect {
-        margin-left: 0.5rem;
-        padding: 0.25rem 0.75rem;
-        border: 1px solid currentColor;
-        border-radius: 4px;
-        background: transparent;
-        color: inherit;
-        cursor: pointer;
-        font-size: 0.85rem;
-    }
-
-    .btn-reconnect:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .chat-container {
-        display: grid;
-        gap: 1.5rem;
-    }
-
-    .user-input-section {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 1.25rem;
-    }
-
-    .input-group {
-        margin-bottom: 1rem;
-    }
-
-    .input-group:last-child {
-        margin-bottom: 0;
-    }
-
-    .input-group label {
-        display: block;
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .input-group input[type="text"] {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background: #1a1a2e;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #fff;
-        font-size: 0.95rem;
-    }
-
-    .input-group input[type="text"]:focus {
-        outline: none;
-        border-color: #00ff88;
-    }
-
-    .input-group input[type="text"]:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .message-row {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    .message-row input {
-        flex: 1;
-    }
-
-    .btn-send {
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #00ff88, #00cc6a);
-        border: none;
-        border-radius: 6px;
-        color: #1a1a2e;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-send:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
-    }
-
-    .btn-send:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .messages-section {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .messages-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .messages-header h3 {
-        margin: 0;
-        color: #fff;
-        font-size: 1rem;
-    }
-
-    .message-count {
-        color: #666;
-        font-size: 0.85rem;
-    }
-
-    .messages-list {
-        max-height: 400px;
-        overflow-y: auto;
-        padding: 1rem 1.25rem;
-    }
-
-    .no-messages {
-        text-align: center;
-        padding: 2rem;
-        color: #555;
-    }
-
-    .no-messages span {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .message {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .message.own-message {
-        background: rgba(0, 255, 136, 0.1);
-        border-left: 3px solid #00ff88;
-    }
-
-    .message-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.25rem;
-    }
-
-    .message-user {
-        font-weight: 600;
-        color: #4ecdc4;
-        font-size: 0.9rem;
-    }
-
-    .own-message .message-user {
-        color: #00ff88;
-    }
-
-    .message-time {
-        color: #555;
-        font-size: 0.8rem;
-        font-family: 'Consolas', monospace;
-    }
-
-    .message-content {
-        color: #ccc;
-        line-height: 1.4;
-    }
-
-    .info-panel {
-        background: rgba(78, 205, 196, 0.1);
-        border: 1px solid rgba(78, 205, 196, 0.2);
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin-top: 1.5rem;
-    }
-
-    .info-panel h3 {
-        color: #4ecdc4;
-        margin: 0 0 0.75rem 0;
-        font-size: 1rem;
-    }
-
-    .info-panel ul {
-        margin: 0;
-        padding-left: 1.25rem;
-        color: #aaa;
-    }
-
-    .info-panel li {
-        margin-bottom: 0.5rem;
-        line-height: 1.5;
-    }
-
-    .info-panel li strong {
-        color: #ccc;
-    }
-
-    .tip {
-        margin: 1rem 0 0 0;
-        padding: 0.75rem 1rem;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 6px;
-        color: #888;
-    }
-</style>
