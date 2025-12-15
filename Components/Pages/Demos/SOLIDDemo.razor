@@ -1,0 +1,623 @@
+@page "/demos/solid"
+@using TechDemoDashboard.Models.SOLID
+@using TechDemoDashboard.Services
+@rendermode InteractiveServer
+
+<PageTitle>SOLID Principles Demo</PageTitle>
+
+<div class="demo-page">
+    <h1>🏗️ SOLID Principles Demo</h1>
+    <p class="description">
+        The five principles of object-oriented design that make code maintainable, extensible, and robust.
+        Each demo shows a BAD approach and the GOOD fix.
+    </p>
+
+    <div class="principles-nav">
+        <button class="@(ActiveTab == "SRP" ? "active" : "")" @onclick="SetTabSRP">S - Single Responsibility</button>
+        <button class="@(ActiveTab == "OCP" ? "active" : "")" @onclick="SetTabOCP">O - Open/Closed</button>
+        <button class="@(ActiveTab == "LSP" ? "active" : "")" @onclick="SetTabLSP">L - Liskov Substitution</button>
+        <button class="@(ActiveTab == "ISP" ? "active" : "")" @onclick="SetTabISP">I - Interface Segregation</button>
+        <button class="@(ActiveTab == "DIP" ? "active" : "")" @onclick="SetTabDIP">D - Dependency Inversion</button>
+    </div>
+
+    <div class="demo-content">
+        @switch (ActiveTab)
+        {
+            case "SRP":
+                @SRPDemo
+                break;
+            case "OCP":
+                @OCPDemo
+                break;
+            case "LSP":
+                @LSPDemo
+                break;
+            case "ISP":
+                @ISPDemo
+                break;
+            case "DIP":
+                @DIPDemo
+                break;
+        }
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private SOLIDDemoService Service { get; set; } = default!;
+
+    private string ActiveTab = "SRP";
+
+    private void SetTabSRP() => ActiveTab = "SRP";
+    private void SetTabOCP() => ActiveTab = "OCP";
+    private void SetTabLSP() => ActiveTab = "LSP";
+    private void SetTabISP() => ActiveTab = "ISP";
+    private void SetTabDIP() => ActiveTab = "DIP";
+}
+
+@* ========== SRP DEMO ========== *@
+@code {
+    // SRP - Delegate to service
+    private string _srpResult => Service.SrpResult;
+    private List<string> _srpLog => Service.SrpLog;
+    private void BadSaveAndEmail() => Service.BadSaveAndEmail();
+    private void GoodSave() => Service.GoodSave();
+    private void GoodEmail() => Service.GoodEmail();
+}
+
+@* ========== OCP DEMO ========== *@
+@code {
+    // OCP - Delegate to service
+    private string _selectedMessageType { get => Service.SelectedMessageType; set => Service.SelectedMessageType = value; }
+    private string _ocpResult => Service.OcpResult;
+    private void SendNotification() => Service.SendNotification();
+}
+
+@* ========== LSP DEMO ========== *@
+@code {
+    // LSP - Delegate to service
+    private List<string> _lspResults => Service.LspResults;
+    private bool _lspCrashed => Service.LspCrashed;
+    private string _lspError => Service.LspError;
+    private void LaunchBadBirds() => Service.LaunchBadBirds();
+    private void LaunchGoodBirds() => Service.LaunchGoodBirds();
+}
+
+@* ========== ISP DEMO ========== *@
+@code {
+    // ISP - Delegate to service
+    private string _selectedPrinter { get => Service.SelectedPrinter; set => Service.SelectedPrinter = value; }
+    private string _ispResult => Service.IspResult;
+    private bool _ispCrashed => Service.IspCrashed;
+    private string _ispError => Service.IspError;
+    private void DoPrint() => Service.DoPrint();
+    private void DoScan() => Service.DoScan();
+    private void DoFax() => Service.DoFax();
+}
+
+@* ========== DIP DEMO ========== *@
+@code {
+    // DIP - Delegate to service
+    private string _selectedDevice { get => Service.SelectedDevice; set => Service.SelectedDevice = value; }
+    private string _dipResult => Service.DipResult;
+    private SmartHomeSwitch _smartSwitch => Service.SmartSwitch;
+    private void ConnectDevice() => Service.ConnectDevice();
+    private void ToggleDevice() => Service.ToggleDevice();
+}
+
+@* ========== COMPONENT DEFINITIONS ========== *@
+
+@code {
+    private RenderFragment SRPDemo => @<div class="principle-demo">
+        <div class="principle-header srp">
+            <h2>S - Single Responsibility Principle</h2>
+            <p class="principle-quote">"A class should have one, and only one, reason to change."</p>
+        </div>
+
+        <div class="demo-split">
+            <div class="demo-bad">
+                <h3>❌ Bad: One Method, Two Jobs</h3>
+                <p>One giant method that saves data AND sends email.</p>
+                <button class="btn btn-bad" @onclick="BadSaveAndEmail">
+                    Save & Email (Violation)
+                </button>
+                <div class="code-block">
+                    <code>SaveAndEmail(data, email)</code>
+                </div>
+            </div>
+
+            <div class="demo-good">
+                <h3>✅ Good: Separate Responsibilities</h3>
+                <p>Each class does ONE thing well.</p>
+                <div class="button-group">
+                    <button class="btn btn-good" @onclick="GoodSave">
+                        💾 Saver.Save()
+                    </button>
+                    <button class="btn btn-good" @onclick="GoodEmail">
+                        📧 Emailer.Send()
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_srpResult))
+        {
+            <div class="result-panel">
+                <h4>Result: @_srpResult</h4>
+                <div class="log">
+                    @foreach (var entry in _srpLog)
+                    {
+                        <div>@entry</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>;
+
+    private RenderFragment OCPDemo => @<div class="principle-demo">
+        <div class="principle-header ocp">
+            <h2>O - Open/Closed Principle</h2>
+            <p class="principle-quote">"Open for extension, closed for modification."</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 The Universal Notification Sender</h3>
+            <p>Add new message types WITHOUT changing NotificationSender!</p>
+            
+            <div class="control-row">
+                <label>Message Type:</label>
+                <select @bind="_selectedMessageType">
+                    <option value="Email">📧 Email</option>
+                    <option value="SMS">📱 SMS</option>
+                    <option value="Push">🔔 Push Notification</option>
+                    <option value="Slack">💬 Slack</option>
+                </select>
+                <button class="btn btn-good" @onclick="SendNotification">
+                    Send Notification
+                </button>
+            </div>
+
+            <div class="aha-moment">
+                <h4>💡 The "Aha!" Moment</h4>
+                <p>Each option uses a DIFFERENT class (EmailMessage, SmsMessage, PushMessage, SlackMessage),<br/>
+                but <code>NotificationSender</code> <strong>never changes!</strong></p>
+            </div>
+        </div>
+
+        @if (Service.NotifSenderLog.Any())
+        {
+            <div class="result-panel success">
+                <h4>Result: @_ocpResult</h4>
+                <div class="log">
+                    @foreach (var entry in Service.NotifSenderLog)
+                    {
+                        <div>@entry</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>;
+
+    private RenderFragment LSPDemo => @<div class="principle-demo">
+        <div class="principle-header lsp">
+            <h2>L - Liskov Substitution Principle</h2>
+            <p class="principle-quote">"Subtypes must be substitutable for their base types."</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>🐦 The Exploding Bird Problem</h3>
+            <p>What happens when you try to make ALL birds fly?</p>
+            
+            <div class="button-group">
+                <button class="btn btn-bad" @onclick="LaunchBadBirds">
+                    ❌ Launch Bad Birds (Duck, Eagle, Penguin)
+                </button>
+                <button class="btn btn-good" @onclick="LaunchGoodBirds">
+                    ✅ Launch IFlyable Only
+                </button>
+            </div>
+        </div>
+
+        @if (_lspResults.Any())
+        {
+            <div class="result-panel @(_lspCrashed ? "error" : "success")">
+                <div class="log">
+                    @foreach (var entry in _lspResults)
+                    {
+                        <div class="@(entry.Contains("CRASH") ? "error-text" : "")">@entry</div>
+                    }
+                </div>
+                @if (_lspCrashed)
+                {
+                    <div class="error-message">
+                        <strong>💥 LSP VIOLATION!</strong><br/>
+                        Penguin inherits from Bird but can't actually fly.<br/>
+                        Substituting Penguin for Bird breaks the app!
+                    </div>
+                }
+            </div>
+        }
+    </div>;
+
+    private RenderFragment ISPDemo => @<div class="principle-demo">
+        <div class="principle-header isp">
+            <h2>I - Interface Segregation Principle</h2>
+            <p class="principle-quote">"No client should be forced to depend on methods it doesn't use."</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>🖨️ The Office Control Panel</h3>
+            <p>What happens when an old printer is forced to have Scan/Fax buttons?</p>
+            
+            <div class="control-row">
+                <label>Select Printer:</label>
+                <select @bind="_selectedPrinter">
+                    <option value="Xerox">Modern Xerox (All features)</option>
+                    <option value="OldHP">Old HP Printer (Print only)</option>
+                </select>
+            </div>
+
+            <div class="printer-controls">
+                <button class="btn btn-print" @onclick="DoPrint">🖨️ Print</button>
+                <button class="btn btn-scan" @onclick="DoScan">📄 Scan</button>
+                <button class="btn btn-fax" @onclick="DoFax">📠 Fax</button>
+            </div>
+
+            @if (_selectedPrinter == "OldHP")
+            {
+                <div class="warning-hint">
+                    ⚠️ Try clicking Scan or Fax on the Old HP Printer...
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(_ispResult) || _ispCrashed)
+        {
+            <div class="result-panel @(_ispCrashed ? "error" : "success")">
+                @if (_ispCrashed)
+                {
+                    <div class="error-message">
+                        <strong>@_ispError</strong><br/><br/>
+                        <strong>ISP VIOLATION!</strong> The Old HP was forced to implement<br/>
+                        IMultiFunctionDevice with Scan() and Fax() methods it can't use.
+                    </div>
+                }
+                else
+                {
+                    <div>@_ispResult</div>
+                }
+            </div>
+        }
+    </div>;
+
+    private RenderFragment DIPDemo => @<div class="principle-demo">
+        <div class="principle-header dip">
+            <h2>D - Dependency Inversion Principle</h2>
+            <p class="principle-quote">"Depend on abstractions, not concretions."</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>🏠 The Universal Smart Home Switch</h3>
+            <p>One switch controls ANY device - Light, Fan, or Coffee Machine!</p>
+            
+            <div class="control-row">
+                <label>Connect to:</label>
+                <select @bind="_selectedDevice">
+                    <option value="Light">💡 Light Bulb</option>
+                    <option value="Fan">🌀 Ceiling Fan</option>
+                    <option value="Coffee">☕ Coffee Machine</option>
+                </select>
+                <button class="btn btn-connect" @onclick="ConnectDevice">
+                    🔌 Connect
+                </button>
+            </div>
+
+            @if (_smartSwitch.CurrentDevice != null)
+            {
+                <div class="device-panel @(_smartSwitch.CurrentDevice.IsOn ? "on" : "off")" 
+                     style="--device-color: @(_smartSwitch.CurrentDevice.OnColor)">
+                    <div class="device-icon @(_smartSwitch.CurrentDevice.IsOn ? "active" : "")">
+                        @_smartSwitch.CurrentDevice.Icon
+                    </div>
+                    <div class="device-name">@_smartSwitch.CurrentDevice.Name</div>
+                    <div class="device-status">@(_smartSwitch.CurrentDevice.IsOn ? "ON" : "OFF")</div>
+                    <button class="btn btn-toggle @(_smartSwitch.CurrentDevice.IsOn ? "on" : "")" @onclick="ToggleDevice">
+                        Toggle Power
+                    </button>
+                </div>
+
+                <div class="aha-moment">
+                    <h4>💡 The Magic</h4>
+                    <p>The <code>SmartHomeSwitch.Toggle()</code> method <strong>never changes</strong>.<br/>
+                    It just calls <code>device.TurnOn()</code> or <code>device.TurnOff()</code> on whatever ISwitchable you inject!</p>
+                </div>
+            }
+        </div>
+
+        @if (_smartSwitch.Log.Any())
+        {
+            <div class="result-panel success">
+                <div class="log">
+                    @foreach (var entry in _smartSwitch.Log)
+                    {
+                        <div>@entry</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>;
+}
+
+<style>
+    .demo-page {
+        padding: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .demo-page h1 {
+        color: #00ff88;
+        margin-bottom: 0.5rem;
+    }
+
+    .description {
+        color: #888;
+        margin-bottom: 1.5rem;
+    }
+
+    .principles-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 1rem;
+    }
+
+    .principles-nav button {
+        padding: 0.6rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: #888;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    .principles-nav button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .principles-nav button.active {
+        background: rgba(0, 255, 136, 0.15);
+        border-color: rgba(0, 255, 136, 0.3);
+        color: #00ff88;
+    }
+
+    .principle-demo {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .principle-header {
+        text-align: center;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .principle-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+    }
+
+    .principle-header.srp h2 { color: #ff6b6b; }
+    .principle-header.ocp h2 { color: #4ecdc4; }
+    .principle-header.lsp h2 { color: #a855f7; }
+    .principle-header.isp h2 { color: #f59e0b; }
+    .principle-header.dip h2 { color: #6366f1; }
+
+    .principle-quote {
+        color: #888;
+        font-style: italic;
+        margin: 0;
+    }
+
+    .demo-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .demo-bad, .demo-good {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .demo-bad {
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+
+    .demo-good {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .demo-bad h3 { color: #ff6b6b; }
+    .demo-good h3 { color: #00ff88; }
+
+    .demo-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .demo-section h3 {
+        color: #fff;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .demo-section p {
+        color: #888;
+        margin: 0 0 1rem 0;
+    }
+
+    .control-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .control-row label {
+        color: #888;
+    }
+
+    .control-row select {
+        padding: 0.5rem 1rem;
+        background: #1a1a2e;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        color: #fff;
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-bad { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; }
+    .btn-good { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #1a1a2e; }
+    .btn-connect { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
+    .btn-print { background: linear-gradient(135deg, #4ecdc4, #44a39c); color: #1a1a2e; }
+    .btn-scan { background: linear-gradient(135deg, #a855f7, #9333ea); color: white; }
+    .btn-fax { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .btn-toggle { background: rgba(255, 255, 255, 0.1); color: #ccc; padding: 0.75rem 2rem; }
+    .btn-toggle.on { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #1a1a2e; }
+
+    .button-group {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .code-block {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        margin-top: 0.75rem;
+        font-family: 'Consolas', monospace;
+        color: #888;
+        font-size: 0.85rem;
+    }
+
+    .result-panel {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .result-panel.success { border-color: rgba(0, 255, 136, 0.3); }
+    .result-panel.error { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.1); }
+
+    .result-panel h4 {
+        color: #00ff88;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .log {
+        font-family: 'Consolas', monospace;
+        font-size: 0.85rem;
+        color: #aaa;
+    }
+
+    .log > div { padding: 0.25rem 0; }
+    .error-text { color: #ff6b6b !important; }
+
+    .error-message {
+        color: #ff6b6b;
+        padding: 0.75rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 6px;
+        margin-top: 0.75rem;
+    }
+
+    .aha-moment {
+        background: rgba(168, 85, 247, 0.1);
+        border: 1px solid rgba(168, 85, 247, 0.2);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .aha-moment h4 { color: #a855f7; margin: 0 0 0.5rem 0; }
+    .aha-moment p { color: #ccc; margin: 0; }
+    .aha-moment code { color: #00ff88; }
+
+    .warning-hint {
+        color: #f59e0b;
+        padding: 0.75rem;
+        background: rgba(245, 158, 11, 0.1);
+        border-radius: 6px;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .printer-controls {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+
+    .device-panel {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        margin: 1rem 0;
+        transition: all 0.3s;
+    }
+
+    .device-panel.on {
+        background: color-mix(in srgb, var(--device-color) 15%, transparent);
+        box-shadow: 0 0 30px color-mix(in srgb, var(--device-color) 30%, transparent);
+    }
+
+    .device-icon {
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s;
+    }
+
+    .device-icon.active {
+        animation: pulse 1s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .device-name { color: #fff; font-size: 1.25rem; font-weight: 600; }
+    .device-status { color: #888; margin: 0.5rem 0 1rem 0; }
+
+    @@media (max-width: 600px) {
+        .demo-split { grid-template-columns: 1fr; }
+        .principles-nav button { flex: 1; min-width: 120px; }
+    }
+</style>

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Demo_C_.Services;
+namespace TechDemoDashboard.Services;
 
 /// <summary>
 /// Service containing all concurrency and parallelism demo logic.

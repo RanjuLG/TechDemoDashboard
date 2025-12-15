@@ -1,6 +1,6 @@
-using Demo_C_.Components;
-using Demo_C_.Services;
-using Demo_C_.Hubs;
+using TechDemoDashboard.Components;
+using TechDemoDashboard.Services;
+using TechDemoDashboard.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,18 @@ builder.Services.AddRazorComponents()
 
 // Register custom services
 builder.Services.AddScoped<ConcurrencyService>();
+
+// Register DI Lifetime demo services
+builder.Services.AddTransient<TransientService>();
+builder.Services.AddScoped<ScopedService>();
+builder.Services.AddSingleton<SingletonService>();
+
+// Register Race Condition demo service (Singleton to persist state)
+builder.Services.AddSingleton<TicketService>();
+
+// Register OOP and SOLID demo services (Scoped for per-request state)
+builder.Services.AddScoped<OOPDemoService>();
+builder.Services.AddScoped<SOLIDDemoService>();
 
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();
@@ -38,7 +50,7 @@ app.MapControllers();
 // Map SignalR hub
 app.MapHub<ChatHub>("/chathub");
 
-app.MapRazorComponents<Demo_C_.Components.App>()
+app.MapRazorComponents<TechDemoDashboard.Components.App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
