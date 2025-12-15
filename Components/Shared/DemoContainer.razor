@@ -1,19 +1,30 @@
 @namespace TechDemoDashboard.Components.Shared
 
-<div class="demo-container">
-    <div class="demo-header">
-        <h3>@Title</h3>
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h3 class="h6 mb-0 fw-bold">@Title</h3>
         @if (IsBusy)
         {
-            <div class="spinner"></div>
+            <div class="spinner-border spinner-border-sm text-primary-custom" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         }
     </div>
     
-    <div class="log-output" @ref="logOutputRef">
-        @foreach (var line in _logLines)
-        {
-            <div class="log-line">@line</div>
-        }
+    <div class="card-body p-0">
+        <div class="log-output p-3" @ref="logOutputRef">
+            @if (!_logLines.Any())
+            {
+                <div class="text-muted text-center py-4">No logs yet. Run a demo to see output here.</div>
+            }
+            else
+            {
+                @foreach (var line in _logLines)
+                {
+                    <div class="log-line">@line</div>
+                }
+            }
+        </div>
     </div>
 </div>
 
@@ -48,59 +59,25 @@
 }
 
 <style>
-    .demo-container {
-        border: 1px solid #333;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #1a1a2e;
-        margin-bottom: 1rem;
-    }
-
-    .demo-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.75rem 1rem;
-        background: #16213e;
-        border-bottom: 1px solid #333;
-    }
-
-    .demo-header h3 {
-        margin: 0;
-        color: #00ff88;
-        font-size: 1.1rem;
-    }
-
-    .spinner {
-        width: 20px;
-        height: 20px;
-        border: 3px solid #333;
-        border-top-color: #00ff88;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @@keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
     .log-output {
-        background: #0a0a0a;
-        color: #00ff88;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: var(--primary-color);
         font-family: 'Consolas', 'Courier New', monospace;
         font-size: 0.85rem;
-        padding: 1rem;
         min-height: 200px;
         max-height: 400px;
         overflow-y: auto;
+        border-radius: 0 0 8px 8px;
     }
 
     .log-line {
         margin-bottom: 0.25rem;
-        line-height: 1.4;
+        line-height: 1.5;
+        padding: 0.125rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .log-line:empty {
-        height: 0.5rem;
+    .log-line:last-child {
+        border-bottom: none;
     }
 </style>

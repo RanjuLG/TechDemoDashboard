@@ -3,297 +3,271 @@
 
 <PageTitle>Tech Demo Dashboard</PageTitle>
 
-<div class="home-container">
-    <header class="hero">
-        <div class="hero-content">
-            <h1>⚡ Tech Demo Dashboard</h1>
-            <p class="tagline">Explore .NET concepts through interactive demonstrations</p>
+<div class="min-vh-100 bg-dark-custom">
+    <!-- Hero Section -->
+    <header class="bg-darker-custom border-bottom border-secondary py-5">
+        <div class="container">
+            <div class="text-center py-4">
+                <h1 class="display-4 fw-bold text-primary-custom mb-3">
+                    <span class="me-2">⚡</span>Tech Demo Dashboard
+                </h1>
+                <p class="lead text-secondary-custom">Explore .NET concepts through interactive demonstrations</p>
+            </div>
         </div>
     </header>
 
-    <section class="demos-section">
-        <h2>Available Demos</h2>
-        
-        <div class="demo-cards">
-            <a href="demos/concurrency" class="demo-card">
-                <div class="card-icon">🧵</div>
-                <div class="card-content">
-                    <h3>Concurrency & Parallelism</h3>
-                    <p>Compare sequential, async, and parallel execution patterns. 
-                       Watch real-time progress and thread behavior.</p>
-                    <ul class="features">
-                        <li>Sequential (Blocking)</li>
-                        <li>Async (Sequential)</li>
-                        <li>Concurrent (Task.WhenAll)</li>
-                        <li>Parallel (Multi-threaded)</li>
-                    </ul>
+    <!-- Demos Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="h3 fw-bold text-white mb-4 pb-2 border-start border-primary-custom border-3 ps-3">
+                Available Demos
+            </h2>
+            
+            <div class="row g-3">
+                <!-- OOP Demo -->
+                <div class="col-12">
+                    <a href="demos/oop" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">⚔️</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">OOP Battle Arena</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            The Four Pillars of OOP demonstrated through an interactive RPG battle simulation.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">Encapsulation</span>
+                                            <span class="badge badge-primary-custom">Inheritance</span>
+                                            <span class="badge badge-primary-custom">Polymorphism</span>
+                                            <span class="badge badge-primary-custom">Abstraction</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/signalr" class="demo-card">
-                <div class="card-icon">📡</div>
-                <div class="card-content">
-                    <h3>SignalR Real-time</h3>
-                    <p>Real-time communication using WebSockets. Open in multiple tabs to see instant message sync.</p>
-                    <ul class="features">
-                        <li>WebSocket Connection</li>
-                        <li>Hub Pattern</li>
-                        <li>Broadcast Messaging</li>
-                    </ul>
+                <!-- SOLID Demo -->
+                <div class="col-12">
+                    <a href="demos/solid" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">🏗️</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">SOLID Principles</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            Master the five principles of maintainable code with interactive violations and fixes.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">SRP</span>
+                                            <span class="badge badge-primary-custom">OCP</span>
+                                            <span class="badge badge-primary-custom">LSP</span>
+                                            <span class="badge badge-primary-custom">ISP</span>
+                                            <span class="badge badge-primary-custom">DIP</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/di-lifetimes" class="demo-card">
-                <div class="card-icon">💉</div>
-                <div class="card-content">
-                    <h3>DI Lifetimes Visualizer</h3>
-                    <p>Understand Transient vs Scoped vs Singleton service lifetimes with visual GUID comparisons.</p>
-                    <ul class="features">
-                        <li>Transient</li>
-                        <li>Scoped</li>
-                        <li>Singleton</li>
-                        <li>Interview Ready</li>
-                    </ul>
+                <!-- DI Lifetimes Demo -->
+                <div class="col-12">
+                    <a href="demos/di-lifetimes" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">💉</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">DI Lifetimes Visualizer</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            Understand Transient vs Scoped vs Singleton service lifetimes with visual GUID comparisons.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">Transient</span>
+                                            <span class="badge badge-primary-custom">Scoped</span>
+                                            <span class="badge badge-primary-custom">Singleton</span>
+                                            <span class="badge badge-primary-custom">Interview Ready</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/race-condition" class="demo-card">
-                <div class="card-icon">🔒</div>
-                <div class="card-content">
-                    <h3>Race Condition & Locking</h3>
-                    <p>See how concurrent threads cause overselling, and how locks prevent race conditions.</p>
-                    <ul class="features">
-                        <li>Thread Safety</li>
-                        <li>Lock Pattern</li>
-                        <li>Overselling Bug</li>
-                        <li>Interview Ready</li>
-                    </ul>
+                <!-- Delegates & Events Demo -->
+                <div class="col-12">
+                    <a href="demos/delegates-events" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">📊</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">Delegates & Events</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            Publisher/Subscriber pattern with a live stock market. See how traders react to price changes!
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">Delegates</span>
+                                            <span class="badge badge-primary-custom">Events</span>
+                                            <span class="badge badge-primary-custom">Subscribe (+=)</span>
+                                            <span class="badge badge-primary-custom">Unsubscribe (-=)</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/oop" class="demo-card">
-                <div class="card-icon">⚔️</div>
-                <div class="card-content">
-                    <h3>OOP Battle Arena</h3>
-                    <p>The Four Pillars of OOP demonstrated through an interactive RPG battle simulation.</p>
-                    <ul class="features">
-                        <li>Encapsulation</li>
-                        <li>Inheritance</li>
-                        <li>Polymorphism</li>
-                        <li>Abstraction</li>
-                    </ul>
+                <!-- Concurrency Demo -->
+                <div class="col-12">
+                    <a href="demos/concurrency" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">🧵</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">Concurrency & Parallelism</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            Compare sequential, async, and parallel execution patterns. Watch real-time progress and thread behavior.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">Sequential (Blocking)</span>
+                                            <span class="badge badge-primary-custom">Async (Sequential)</span>
+                                            <span class="badge badge-primary-custom">Concurrent (Task.WhenAll)</span>
+                                            <span class="badge badge-primary-custom">Parallel (Multi-threaded)</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/solid" class="demo-card">
-                <div class="card-icon">🏗️</div>
-                <div class="card-content">
-                    <h3>SOLID Principles</h3>
-                    <p>Master the five principles of maintainable code with interactive violations and fixes.</p>
-                    <ul class="features">
-                        <li>SRP</li>
-                        <li>OCP</li>
-                        <li>LSP</li>
-                        <li>ISP</li>
-                        <li>DIP</li>
-                    </ul>
+                <!-- Race Condition Demo -->
+                <div class="col-12">
+                    <a href="demos/race-condition" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">🔒</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">Race Condition & Locking</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            See how concurrent threads cause overselling, and how locks prevent race conditions.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">Thread Safety</span>
+                                            <span class="badge badge-primary-custom">Lock Pattern</span>
+                                            <span class="badge badge-primary-custom">Overselling Bug</span>
+                                            <span class="badge badge-primary-custom">Interview Ready</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
 
-            <a href="demos/delegates-events" class="demo-card">
-                <div class="card-icon">📊</div>
-                <div class="card-content">
-                    <h3>Delegates & Events</h3>
-                    <p>Publisher/Subscriber pattern with a live stock market. See how traders react to price changes!</p>
-                    <ul class="features">
-                        <li>Delegates</li>
-                        <li>Events</li>
-                        <li>Subscribe (+=)</li>
-                        <li>Unsubscribe (-=)</li>
-                    </ul>
+                <!-- SignalR Demo -->
+                <div class="col-12">
+                    <a href="demos/signalr" class="text-decoration-none">
+                        <div class="card h-100 demo-card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="fs-1 flex-shrink-0">📡</div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="h5 fw-bold text-white mb-2">SignalR Real-time</h3>
+                                        <p class="text-secondary-custom mb-3">
+                                            Real-time communication using WebSockets. Open in multiple tabs to see instant message sync.
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge badge-primary-custom">WebSocket Connection</span>
+                                            <span class="badge badge-primary-custom">Hub Pattern</span>
+                                            <span class="badge badge-primary-custom">Broadcast Messaging</span>
+                                        </div>
+                                    </div>
+                                    <div class="fs-4 text-primary-custom arrow-icon">→</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <span class="card-arrow">→</span>
-            </a>
+            </div>
         </div>
     </section>
 
-    <section class="info-section">
-        <div class="info-card">
-            <h3>🎯 Debug-Friendly</h3>
-            <p>All logic separated into Service classes for easy breakpoint debugging.</p>
-        </div>
-        <div class="info-card">
-            <h3>📊 Visual Feedback</h3>
-            <p>Real-time log output shows exactly what's happening under the hood.</p>
-        </div>
-        <div class="info-card">
-            <h3>💡 Learn by Doing</h3>
-            <p>Interactive examples to understand complex .NET patterns.</p>
+    <!-- Info Section -->
+    <section class="py-5 border-top border-secondary">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body p-4">
+                            <div class="fs-2 mb-3">🎯</div>
+                            <h3 class="h6 fw-bold text-white mb-2">Debug-Friendly</h3>
+                            <p class="text-secondary-custom small mb-0">
+                                All logic separated into Service classes for easy breakpoint debugging.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body p-4">
+                            <div class="fs-2 mb-3">📊</div>
+                            <h3 class="h6 fw-bold text-white mb-2">Visual Feedback</h3>
+                            <p class="text-secondary-custom small mb-0">
+                                Real-time log output shows exactly what's happening under the hood.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body p-4">
+                            <div class="fs-2 mb-3">💡</div>
+                            <h3 class="h6 fw-bold text-white mb-2">Learn by Doing</h3>
+                            <p class="text-secondary-custom small mb-0">
+                                Interactive examples to understand complex .NET patterns.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </div>
 
 <style>
-    .home-container {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
-    }
-
-    .hero {
-        padding: 3rem 2rem;
-        text-align: center;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border-bottom: 1px solid rgba(0, 255, 136, 0.2);
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-        color: #00ff88;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-    }
-
-    .tagline {
-        font-size: 1.1rem;
-        color: #888;
-        margin: 0;
-    }
-
-    .demos-section {
-        padding: 2rem;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    .demos-section h2 {
-        color: #fff;
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        padding-left: 0.5rem;
-        border-left: 3px solid #00ff88;
-    }
-
-    .demo-cards {
-        display: grid;
-        gap: 1rem;
-    }
-
-    .demo-card {
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        text-decoration: none;
-        color: inherit;
+    .demo-card-hover {
         transition: all 0.3s ease;
     }
-
-    .demo-card:not(.coming-soon):hover {
-        background: rgba(0, 255, 136, 0.05);
-        border-color: rgba(0, 255, 136, 0.3);
-        transform: translateX(4px);
+    
+    .demo-card-hover:hover {
+        transform: translateX(8px);
+        border-color: var(--border-accent) !important;
+        box-shadow: 0 4px 16px rgba(0, 255, 136, 0.15);
     }
-
-    .demo-card.coming-soon {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .card-icon {
-        font-size: 2rem;
-        flex-shrink: 0;
-    }
-
-    .card-content {
-        flex: 1;
-    }
-
-    .card-content h3 {
-        color: #fff;
-        margin: 0 0 0.5rem 0;
-        font-size: 1.2rem;
-    }
-
-    .card-content p {
-        color: #888;
-        margin: 0 0 0.75rem 0;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-
-    .features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .features li {
-        background: rgba(0, 255, 136, 0.1);
-        color: #00ff88;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-    }
-
-    .badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.1);
-        color: #666;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-    }
-
-    .card-arrow {
-        color: #00ff88;
-        font-size: 1.5rem;
+    
+    .demo-card-hover .arrow-icon {
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-
-    .demo-card:hover .card-arrow {
+    
+    .demo-card-hover:hover .arrow-icon {
         opacity: 1;
-    }
-
-    .info-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        padding: 2rem;
-        max-width: 1000px;
-        margin: 0 auto;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .info-card {
-        padding: 1.25rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    .info-card h3 {
-        color: #fff;
-        margin: 0 0 0.5rem 0;
-        font-size: 1rem;
-    }
-
-    .info-card p {
-        color: #666;
-        margin: 0;
-        font-size: 0.85rem;
-        line-height: 1.4;
     }
 </style>

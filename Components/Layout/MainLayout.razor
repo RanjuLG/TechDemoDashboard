@@ -1,42 +1,130 @@
 @inherits LayoutComponentBase
 
-<div class="d-flex">
+<div class="d-flex min-vh-100 bg-dark-custom position-relative">
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle btn btn-primary position-fixed d-lg-none" 
+            onclick="toggleSidebar()"
+            style="top: 1rem; left: 1rem; z-index: 1100;">
+        <span class="navbar-toggler-icon">☰</span>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay d-lg-none" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar bg-dark text-white d-flex flex-column" style="width: 250px; min-height: 100vh;">
+    <div class="sidebar bg-darker-custom border-end border-secondary d-flex flex-column" id="sidebar">
         <NavMenu />
     </div>
 
     <!-- Main content -->
-    <div class="flex-grow-1 bg-dark">
-        <article class="p-0">
+    <div class="flex-grow-1 bg-dark-custom main-content">
+        <main class="p-0">
             @Body
-        </article>
+        </main>
     </div>
 </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">??</a>
+<div id="blazor-error-ui" class="position-fixed bottom-0 start-0 w-100 p-3" style="z-index: 1050; display: none;">
+    <div class="alert alert-danger d-flex justify-content-between align-items-center mb-0" role="alert">
+        <span>An unhandled error has occurred. <a href="" class="alert-link">Reload</a></span>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="document.getElementById('blazor-error-ui').style.display='none'"></button>
+    </div>
 </div>
 
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        } else {
+            sidebar.classList.add('show');
+            overlay.classList.add('show');
+        }
+    }
+</script>
+
 <style>
+    .sidebar {
+        width: 280px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+    }
+    
     #blazor-error-ui {
-        background: lightyellow;
-        bottom: 0;
-        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-        display: none;
-        left: 0;
-        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-        position: fixed;
-        width: 100%;
-        z-index: 1000;
+        background: transparent;
     }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+    .mobile-menu-toggle {
+        display: none;
+    }
+
+    .mobile-menu-toggle .navbar-toggler-icon {
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Mobile styles */
+    @@media (max-width: 991.98px) {
+        .mobile-menu-toggle {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1050;
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            width: 100%;
+        }
+    }
+
+    /* Desktop styles */
+    @@media (min-width: 992px) {
+        .sidebar {
+            transform: translateX(0) !important;
+        }
     }
 </style>

@@ -5,123 +5,160 @@
 
 <PageTitle>Race Condition Demo</PageTitle>
 
-<div class="demo-page">
-    <h1>🔒 Race Condition & Locking Demo</h1>
-    <p class="description">
-        Visualize what happens when multiple threads try to access shared resources simultaneously.
-        This demonstrates the classic "double-booking" or "overselling" problem.
-    </p>
-
-    <div class="interview-question">
-        <span class="label">🎯 Interview Question:</span>
-        <span class="question">"Two users try to buy the last ticket at the exact same millisecond. How do you prevent selling it twice?"</span>
-    </div>
-
-    <div class="scenario-panel">
-        <h3>📋 Scenario</h3>
-        <div class="scenario-details">
-            <div class="scenario-item">
-                <span class="scenario-label">Available Tickets:</span>
-                <span class="scenario-value">1</span>
-            </div>
-            <div class="scenario-item">
-                <span class="scenario-label">Concurrent Buyers:</span>
-                <span class="scenario-value">@_buyerCount</span>
-            </div>
-            <div class="scenario-item">
-                <span class="scenario-label">Each buyer:</span>
-                <span class="scenario-value">Reads → Checks → Waits 10ms → Decrements</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <div class="control-group">
-            <label>Number of Buyers:</label>
-            <input type="range" min="5" max="20" @bind="_buyerCount" @bind:event="oninput" disabled="@_isRunning" />
-            <span class="control-value">@_buyerCount</span>
+<div class="min-vh-100 bg-dark-custom p-4">
+    <div class="container-fluid" style="max-width: 1200px;">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-primary-custom mb-2">
+                <span class="me-2">🔒</span>Race Condition & Locking Demo
+            </h1>
+            <p class="text-secondary-custom">
+                Visualize what happens when multiple threads try to access shared resources simultaneously.
+                This demonstrates the classic "double-booking" or "overselling" problem.
+            </p>
         </div>
 
-        <div class="button-group">
-            <button class="btn btn-danger" @onclick="RunWithoutLock" disabled="@_isRunning">
-                ❌ Run WITHOUT Lock
-            </button>
-            <button class="btn btn-success" @onclick="RunWithLock" disabled="@_isRunning">
-                ✅ Run WITH Lock
-            </button>
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <span class="fw-bold">🎯 Interview Question:</span>
+            <span class="fst-italic">"Two users try to buy the last ticket at the exact same millisecond. How do you prevent selling it twice?"</span>
         </div>
-    </div>
 
-    @if (_hasResult)
-    {
-        <div class="results-panel @(_lastUsedLock ? "success" : (_lastFinalTickets < 0 ? "danger" : "warning"))">
-            <h3>📊 Results</h3>
-            <div class="results-grid">
-                <div class="result-item">
-                    <span class="result-label">Successful Purchases</span>
-                    <span class="result-value success">@_lastSuccessCount</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Failed Purchases</span>
-                    <span class="result-value neutral">@_lastFailCount</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Final Ticket Count</span>
-                    <span class="result-value @(_lastFinalTickets < 0 ? "danger" : "success")">@_lastFinalTickets</span>
+        <!-- Scenario Panel -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📋 Scenario</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="small text-muted mb-1">Available Tickets</div>
+                            <div class="h4 fw-bold text-info mb-0">1</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="small text-muted mb-1">Concurrent Buyers</div>
+                            <div class="h4 fw-bold text-info mb-0">@_buyerCount</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="small text-muted mb-1">Each Buyer</div>
+                            <div class="small text-info mb-0">Read → Check → Wait 10ms → Decrement</div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            @if (!_lastUsedLock && _lastFinalTickets < 0)
-            {
-                <div class="result-alert danger">
-                    ⚠️ <strong>OVERSOLD by @(Math.Abs(_lastFinalTickets)) tickets!</strong> 
-                    This is the race condition bug. Multiple threads read the same value before any decremented.
+        <!-- Controls -->
+        <div class="card mb-4">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label for="buyers" class="form-label mb-1">Number of Buyers: <span class="text-primary-custom fw-bold">@_buyerCount</span></label>
+                        <input type="range" class="form-range" id="buyers" min="5" max="20" @bind="_buyerCount" @bind:event="oninput" disabled="@_isRunning" />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-danger" @onclick="RunWithoutLock" disabled="@_isRunning">
+                                ❌ Run WITHOUT Lock
+                            </button>
+                            <button class="btn btn-success" @onclick="RunWithLock" disabled="@_isRunning">
+                                ✅ Run WITH Lock
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            }
-            else if (_lastUsedLock && _lastFinalTickets == 0 && _lastSuccessCount == 1)
-            {
-                <div class="result-alert success">
-                    ✨ <strong>Perfect!</strong> The lock prevented overselling. 
-                    Only 1 buyer succeeded, exactly as expected.
+            </div>
+        </div>
+
+        <!-- Results -->
+        @if (_hasResult)
+        {
+            <div class="card mb-4 border-@(_lastUsedLock ? "success" : (_lastFinalTickets < 0 ? "danger" : "warning"))">
+                <div class="card-header bg-@(_lastUsedLock ? "success" : (_lastFinalTickets < 0 ? "danger" : "warning")) bg-opacity-10">
+                    <h3 class="h6 mb-0 fw-bold">📊 Results</h3>
                 </div>
-            }
-        </div>
-    }
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted mb-1">Successful Purchases</div>
+                            <div class="h3 fw-bold text-success mb-0">@_lastSuccessCount</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted mb-1">Failed Purchases</div>
+                            <div class="h3 fw-bold text-secondary mb-0">@_lastFailCount</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted mb-1">Final Ticket Count</div>
+                            <div class="h3 fw-bold @(_lastFinalTickets < 0 ? "text-danger" : "text-success") mb-0">@_lastFinalTickets</div>
+                        </div>
+                    </div>
 
-    <div class="log-panel">
-        <div class="log-header">
-            <h3>📜 Execution Log</h3>
-            <button class="btn-clear" @onclick="ClearLog">Clear</button>
-        </div>
-        <div class="log-content">
-            @if (TicketService.Log.Count == 0)
-            {
-                <p class="log-empty">Run a simulation to see the execution log...</p>
-            }
-            else
-            {
-                @foreach (var entry in TicketService.Log)
-                {
-                    <div class="log-entry @GetLogEntryClass(entry)">@entry</div>
-                }
-            }
-        </div>
-    </div>
+                    @if (!_lastUsedLock && _lastFinalTickets < 0)
+                    {
+                        <div class="alert alert-danger mb-0">
+                            <strong>⚠️ OVERSOLD by @(Math.Abs(_lastFinalTickets)) tickets!</strong><br/>
+                            This is the race condition bug. Multiple threads read the same value before any decremented.
+                        </div>
+                    }
+                    else if (_lastUsedLock && _lastFinalTickets == 0 && _lastSuccessCount == 1)
+                    {
+                        <div class="alert alert-success mb-0">
+                            <strong>✨ Perfect!</strong> The lock prevented overselling. Only 1 buyer succeeded, exactly as expected.
+                        </div>
+                    }
+                </div>
+            </div>
+        }
 
-    <div class="info-panel">
-        <h3>📖 The Fix: Using Locks</h3>
-        <div class="code-comparison">
-            <div class="code-block danger">
-                <h4>❌ Unsafe (Race Condition)</h4>
-                <pre><code>if (tickets > 0)
+        <!-- Execution Log -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="h6 mb-0 fw-bold">📜 Execution Log</h3>
+                <button class="btn btn-sm btn-secondary" @onclick="ClearLog">Clear</button>
+            </div>
+            <div class="card-body p-0">
+                <div class="p-3 bg-dark font-monospace small" style="max-height: 300px; overflow-y: auto;">
+                    @if (TicketService.Log.Count == 0)
+                    {
+                        <p class="text-muted text-center mb-0">Run a simulation to see the execution log...</p>
+                    }
+                    else
+                    {
+                        @foreach (var entry in TicketService.Log)
+                        {
+                            <div class="@GetLogEntryClass(entry) py-1">@entry</div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Comparison -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 The Fix: Using Locks</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border border-danger rounded p-3 bg-danger bg-opacity-10">
+                            <h4 class="h6 text-danger mb-2">❌ Unsafe (Race Condition)</h4>
+                            <pre class="mb-0"><code class="text-white-50">if (tickets > 0)
 {
     Thread.Sleep(10); // Latency
     tickets--;        // BUG: Others may have decremented!
 }</code></pre>
-            </div>
-            <div class="code-block success">
-                <h4>✅ Safe (With Lock)</h4>
-                <pre><code>lock (_lockObject)
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border border-success rounded p-3 bg-success bg-opacity-10">
+                            <h4 class="h6 text-success mb-2">✅ Safe (With Lock)</h4>
+                            <pre class="mb-0"><code class="text-white-50">lock (_lockObject)
 {
     if (tickets > 0)
     {
@@ -129,6 +166,9 @@
         tickets--;    // Only one thread at a time
     }
 }</code></pre>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -158,7 +198,7 @@
         _isRunning = true;
         StateHasChanged();
 
-        await Task.Delay(50); // Let UI update
+        await Task.Delay(50);
 
         await Task.Run(() =>
         {
@@ -183,334 +223,10 @@
 
     private string GetLogEntryClass(string entry)
     {
-        if (entry.Contains("✅")) return "log-success";
-        if (entry.Contains("❌")) return "log-error";
-        if (entry.Contains("⚠️")) return "log-warning";
-        if (entry.Contains("🔒")) return "log-lock";
-        return "";
+        if (entry.Contains("✅")) return "text-success";
+        if (entry.Contains("❌")) return "text-danger";
+        if (entry.Contains("⚠️")) return "text-warning";
+        if (entry.Contains("🔒")) return "text-info";
+        return "text-secondary";
     }
 }
-
-<style>
-    .demo-page {
-        padding: 1.5rem;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    .demo-page h1 {
-        color: #00ff88;
-        margin-bottom: 0.5rem;
-    }
-
-    .description {
-        color: #888;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-    }
-
-    .interview-question {
-        background: rgba(168, 85, 247, 0.15);
-        border: 1px solid rgba(168, 85, 247, 0.3);
-        border-radius: 8px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .interview-question .label {
-        color: #a855f7;
-        font-weight: 600;
-        margin-right: 0.5rem;
-    }
-
-    .interview-question .question {
-        color: #ccc;
-        font-style: italic;
-    }
-
-    .scenario-panel {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .scenario-panel h3 {
-        margin: 0 0 1rem 0;
-        color: #fff;
-        font-size: 1rem;
-    }
-
-    .scenario-details {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-    }
-
-    .scenario-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .scenario-label {
-        color: #666;
-        font-size: 0.85rem;
-    }
-
-    .scenario-value {
-        color: #4ecdc4;
-        font-weight: 600;
-    }
-
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        align-items: flex-end;
-        margin-bottom: 1.5rem;
-    }
-
-    .control-group {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .control-group label {
-        color: #888;
-        font-size: 0.9rem;
-    }
-
-    .control-group input[type="range"] {
-        width: 120px;
-    }
-
-    .control-value {
-        color: #00ff88;
-        font-weight: 600;
-        min-width: 30px;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .btn-danger {
-        background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
-        color: white;
-    }
-
-    .btn-success {
-        background: linear-gradient(135deg, #00ff88, #00cc6a);
-        color: #1a1a2e;
-    }
-
-    .btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .results-panel {
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .results-panel.danger {
-        background: rgba(255, 107, 107, 0.1);
-        border: 1px solid rgba(255, 107, 107, 0.3);
-    }
-
-    .results-panel.success {
-        background: rgba(0, 255, 136, 0.1);
-        border: 1px solid rgba(0, 255, 136, 0.3);
-    }
-
-    .results-panel.warning {
-        background: rgba(245, 158, 11, 0.1);
-        border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .results-panel h3 {
-        margin: 0 0 1rem 0;
-        color: #fff;
-        font-size: 1rem;
-    }
-
-    .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .result-item {
-        text-align: center;
-    }
-
-    .result-label {
-        display: block;
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .result-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    .result-value.success { color: #00ff88; }
-    .result-value.danger { color: #ff6b6b; }
-    .result-value.neutral { color: #888; }
-
-    .result-alert {
-        padding: 0.75rem 1rem;
-        border-radius: 6px;
-        font-size: 0.9rem;
-    }
-
-    .result-alert.danger {
-        background: rgba(255, 107, 107, 0.2);
-        color: #ff6b6b;
-    }
-
-    .result-alert.success {
-        background: rgba(0, 255, 136, 0.2);
-        color: #00ff88;
-    }
-
-    .log-panel {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-
-    .log-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .log-header h3 {
-        margin: 0;
-        color: #fff;
-        font-size: 1rem;
-    }
-
-    .btn-clear {
-        padding: 0.35rem 0.75rem;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 4px;
-        color: #888;
-        cursor: pointer;
-        font-size: 0.8rem;
-    }
-
-    .btn-clear:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: #ccc;
-    }
-
-    .log-content {
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 1rem 1.25rem;
-        font-family: 'Consolas', monospace;
-        font-size: 0.85rem;
-    }
-
-    .log-empty {
-        color: #555;
-        text-align: center;
-        margin: 0;
-    }
-
-    .log-entry {
-        padding: 0.25rem 0;
-        color: #aaa;
-    }
-
-    .log-entry.log-success { color: #00ff88; }
-    .log-entry.log-error { color: #ff6b6b; }
-    .log-entry.log-warning { color: #f59e0b; }
-    .log-entry.log-lock { color: #a855f7; }
-
-    .info-panel {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 1.25rem;
-    }
-
-    .info-panel h3 {
-        color: #00ff88;
-        margin: 0 0 1rem 0;
-        font-size: 1rem;
-    }
-
-    .code-comparison {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-    }
-
-    .code-block {
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .code-block.danger {
-        background: rgba(255, 107, 107, 0.1);
-        border: 1px solid rgba(255, 107, 107, 0.2);
-    }
-
-    .code-block.success {
-        background: rgba(0, 255, 136, 0.1);
-        border: 1px solid rgba(0, 255, 136, 0.2);
-    }
-
-    .code-block h4 {
-        margin: 0;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .code-block.danger h4 { color: #ff6b6b; }
-    .code-block.success h4 { color: #00ff88; }
-
-    .code-block pre {
-        margin: 0;
-        padding: 1rem;
-        overflow-x: auto;
-    }
-
-    .code-block code {
-        font-family: 'Consolas', monospace;
-        font-size: 0.85rem;
-        color: #ccc;
-    }
-</style>
