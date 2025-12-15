@@ -22,6 +22,7 @@ builder.Services.AddSingleton<TicketService>();
 // Register OOP and SOLID demo services (Scoped for per-request state)
 builder.Services.AddScoped<OOPDemoService>();
 builder.Services.AddScoped<SOLIDDemoService>();
+builder.Services.AddScoped<DelegatesEventsService>();
 
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();
