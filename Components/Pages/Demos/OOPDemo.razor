@@ -12,6 +12,22 @@
         Each concept is visualized with interactive hero characters.
     </p>
 
+    <div class="alert alert-info border-info mb-4">
+        <div class="mb-2">
+            <span class="fw-bold">🎯 Interview Question:</span> 
+            <span class="fst-italic">"Explain the four pillars of OOP with real-world examples."</span>
+        </div>
+        <div class="ms-4">
+            <strong>Answer:</strong> (Using our Battle Arena demo)
+            <ul class="mb-0 mt-2">
+                <li><strong>Encapsulation:</strong> Hero's Health property has validation - you can't set health below 0 or above MaxHealth. Internal state is protected from invalid changes.</li>
+                <li><strong>Inheritance:</strong> Warrior, Mage, and Rogue all inherit from the abstract Hero base class, gaining common properties (Health, Name) and methods (TakeDamage).</li>
+                <li><strong>Polymorphism:</strong> Each hero's Attack() method behaves differently - Warrior does critical hits, Mage casts spells with mana, Rogue does backstab damage. Same method name, different implementations.</li>
+                <li><strong>Abstraction:</strong> The Hero class is abstract - you can't create a generic "Hero", only specific types (Warrior/Mage/Rogue). This hides complexity and enforces proper usage.</li>
+            </ul>
+        </div>
+    </div>
+
     <div class="pillars-overview">
         <div class="pillar">
             <span class="pillar-icon">📦</span>

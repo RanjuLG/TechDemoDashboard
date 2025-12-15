@@ -20,8 +20,19 @@
 
         <!-- Interview Question -->
         <div class="alert alert-info border-info mb-4">
-            <span class="fw-bold">🎯 Interview Question:</span>
-            <span class="fst-italic">"Two users try to buy the last ticket at the exact same millisecond. How do you prevent selling it twice?"</span>
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span>
+                <span class="fst-italic">"Two users try to buy the last ticket at the exact same millisecond. How do you prevent selling it twice?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Problem:</strong> Race condition occurs when multiple threads access shared data simultaneously without synchronization.</li>
+                    <li><strong>Solution:</strong> Use the <code>lock</code> statement to ensure only one thread can access the critical section at a time.</li>
+                    <li><strong>How it works:</strong> The lock creates a mutual exclusion (mutex) - when one thread enters the locked section, other threads must wait until it's released.</li>
+                    <li><strong>Best Practice:</strong> Always lock on a private readonly object, keep the locked section as small as possible for better performance.</li>
+                </ul>
+            </div>
         </div>
 
         <!-- Scenario Panel -->
