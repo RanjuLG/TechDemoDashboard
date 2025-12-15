@@ -1,0 +1,418 @@
+@page "/demos/di-lifetimes"
+@using Demo_C_.Services
+@inject TransientService Transient1
+@inject TransientService Transient2
+@inject ScopedService Scoped1
+@inject ScopedService Scoped2
+@inject SingletonService Singleton1
+@inject SingletonService Singleton2
+@rendermode InteractiveServer
+
+<PageTitle>DI Lifetimes Demo</PageTitle>
+
+<div class="demo-page">
+    <h1>💉 DI Lifetimes Visualizer</h1>
+    <p class="description">
+        Understand the difference between Transient, Scoped, and Singleton service lifetimes.
+        Each service generates a unique GUID when instantiated. Watch how they behave differently!
+    </p>
+
+    <div class="interview-question">
+        <span class="label">🎯 Interview Question:</span>
+        <span class="question">"What is the difference between Scoped and Transient services?"</span>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-refresh" @onclick="RefreshPage">
+            🔄 Refresh Page
+        </button>
+        <span class="refresh-hint">Click to see how each lifetime behaves on refresh</span>
+    </div>
+
+    <div class="lifetime-grid">
+        <!-- Transient -->
+        <div class="lifetime-card transient">
+            <div class="card-header">
+                <span class="lifetime-icon">🔄</span>
+                <h3>Transient</h3>
+                <span class="lifetime-badge">New instance every time</span>
+            </div>
+            <div class="card-content">
+                <p class="lifetime-desc">A new instance is created <strong>every time</strong> the service is requested.</p>
+                <div class="instance-row">
+                    <div class="instance">
+                        <span class="instance-label">Injection 1:</span>
+                        <code class="guid">@Transient1.InstanceId.ToString()[..8]...</code>
+                    </div>
+                    <div class="instance">
+                        <span class="instance-label">Injection 2:</span>
+                        <code class="guid">@Transient2.InstanceId.ToString()[..8]...</code>
+                    </div>
+                </div>
+                <div class="comparison @(Transient1.InstanceId == Transient2.InstanceId ? "same" : "different")">
+                    @if (Transient1.InstanceId == Transient2.InstanceId)
+                    {
+                        <span>✅ Same instance</span>
+                    }
+                    else
+                    {
+                        <span>❌ Different instances</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Scoped -->
+        <div class="lifetime-card scoped">
+            <div class="card-header">
+                <span class="lifetime-icon">📦</span>
+                <h3>Scoped</h3>
+                <span class="lifetime-badge">One per request</span>
+            </div>
+            <div class="card-content">
+                <p class="lifetime-desc">One instance per <strong>HTTP request/scope</strong>. Same within request, different across requests.</p>
+                <div class="instance-row">
+                    <div class="instance">
+                        <span class="instance-label">Injection 1:</span>
+                        <code class="guid">@Scoped1.InstanceId.ToString()[..8]...</code>
+                    </div>
+                    <div class="instance">
+                        <span class="instance-label">Injection 2:</span>
+                        <code class="guid">@Scoped2.InstanceId.ToString()[..8]...</code>
+                    </div>
+                </div>
+                <div class="comparison @(Scoped1.InstanceId == Scoped2.InstanceId ? "same" : "different")">
+                    @if (Scoped1.InstanceId == Scoped2.InstanceId)
+                    {
+                        <span>✅ Same instance (within this request)</span>
+                    }
+                    else
+                    {
+                        <span>❌ Different instances</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Singleton -->
+        <div class="lifetime-card singleton">
+            <div class="card-header">
+                <span class="lifetime-icon">🌐</span>
+                <h3>Singleton</h3>
+                <span class="lifetime-badge">One for all</span>
+            </div>
+            <div class="card-content">
+                <p class="lifetime-desc">One instance for the <strong>entire application lifetime</strong>. Never changes.</p>
+                <div class="instance-row">
+                    <div class="instance">
+                        <span class="instance-label">Injection 1:</span>
+                        <code class="guid">@Singleton1.InstanceId.ToString()[..8]...</code>
+                    </div>
+                    <div class="instance">
+                        <span class="instance-label">Injection 2:</span>
+                        <code class="guid">@Singleton2.InstanceId.ToString()[..8]...</code>
+                    </div>
+                </div>
+                <div class="comparison @(Singleton1.InstanceId == Singleton2.InstanceId ? "same" : "different")">
+                    @if (Singleton1.InstanceId == Singleton2.InstanceId)
+                    {
+                        <span>✅ Same instance (always!)</span>
+                    }
+                    else
+                    {
+                        <span>❌ Different instances</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h3>📖 Key Takeaways</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Lifetime</th>
+                    <th>Created When</th>
+                    <th>Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge transient">Transient</span></td>
+                    <td>Every injection</td>
+                    <td>Lightweight, stateless services</td>
+                </tr>
+                <tr>
+                    <td><span class="badge scoped">Scoped</span></td>
+                    <td>Once per request</td>
+                    <td>DbContext, per-request state</td>
+                </tr>
+                <tr>
+                    <td><span class="badge singleton">Singleton</span></td>
+                    <td>Once per app</td>
+                    <td>Caches, configuration, logging</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    private void RefreshPage()
+    {
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+}
+
+<style>
+    .demo-page {
+        padding: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .demo-page h1 {
+        color: #00ff88;
+        margin-bottom: 0.5rem;
+    }
+
+    .description {
+        color: #888;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .interview-question {
+        background: rgba(168, 85, 247, 0.15);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .interview-question .label {
+        color: #a855f7;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    .interview-question .question {
+        color: #ccc;
+        font-style: italic;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-refresh {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #4ecdc4, #44a39c);
+        border: none;
+        border-radius: 6px;
+        color: #1a1a2e;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-refresh:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+    }
+
+    .refresh-hint {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .lifetime-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .lifetime-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .lifetime-icon {
+        font-size: 1.5rem;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        flex: 1;
+    }
+
+    .lifetime-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .lifetime-card.transient .card-header {
+        background: rgba(255, 107, 107, 0.15);
+        border-bottom: 2px solid #ff6b6b;
+    }
+
+    .lifetime-card.transient .card-header h3 { color: #ff6b6b; }
+    .lifetime-card.transient .lifetime-badge { color: #ff6b6b; }
+
+    .lifetime-card.scoped .card-header {
+        background: rgba(78, 205, 196, 0.15);
+        border-bottom: 2px solid #4ecdc4;
+    }
+
+    .lifetime-card.scoped .card-header h3 { color: #4ecdc4; }
+    .lifetime-card.scoped .lifetime-badge { color: #4ecdc4; }
+
+    .lifetime-card.singleton .card-header {
+        background: rgba(168, 85, 247, 0.15);
+        border-bottom: 2px solid #a855f7;
+    }
+
+    .lifetime-card.singleton .card-header h3 { color: #a855f7; }
+    .lifetime-card.singleton .lifetime-badge { color: #a855f7; }
+
+    .card-content {
+        padding: 1.25rem;
+    }
+
+    .lifetime-desc {
+        color: #888;
+        font-size: 0.9rem;
+        margin: 0 0 1rem 0;
+        line-height: 1.5;
+    }
+
+    .lifetime-desc strong {
+        color: #ccc;
+    }
+
+    .instance-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .instance {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .instance-label {
+        color: #666;
+        font-size: 0.85rem;
+        min-width: 80px;
+    }
+
+    .guid {
+        background: #1a1a2e;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-family: 'Consolas', monospace;
+        font-size: 0.9rem;
+        color: #00ff88;
+        flex: 1;
+    }
+
+    .comparison {
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .comparison.same {
+        background: rgba(0, 255, 136, 0.15);
+        color: #00ff88;
+    }
+
+    .comparison.different {
+        background: rgba(255, 107, 107, 0.15);
+        color: #ff6b6b;
+    }
+
+    .info-panel {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .info-panel h3 {
+        color: #00ff88;
+        margin: 0 0 1rem 0;
+        font-size: 1rem;
+    }
+
+    .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .summary-table th,
+    .summary-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .summary-table th {
+        color: #888;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .summary-table td {
+        color: #ccc;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .badge.transient {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff6b6b;
+    }
+
+    .badge.scoped {
+        background: rgba(78, 205, 196, 0.2);
+        color: #4ecdc4;
+    }
+
+    .badge.singleton {
+        background: rgba(168, 85, 247, 0.2);
+        color: #a855f7;
+    }
+</style>

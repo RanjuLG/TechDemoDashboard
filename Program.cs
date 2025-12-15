@@ -11,6 +11,11 @@ builder.Services.AddRazorComponents()
 // Register custom services
 builder.Services.AddScoped<ConcurrencyService>();
 
+// Register DI Lifetime demo services
+builder.Services.AddTransient<TransientService>();
+builder.Services.AddScoped<ScopedService>();
+builder.Services.AddSingleton<SingletonService>();
+
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();
 
