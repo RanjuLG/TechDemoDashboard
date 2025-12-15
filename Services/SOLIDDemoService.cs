@@ -1,6 +1,6 @@
-using Demo_C_.Models.SOLID;
+using TechDemoDashboard.Models.SOLID;
 
-namespace Demo_C_.Services;
+namespace TechDemoDashboard.Services;
 
 /// <summary>
 /// Service for managing SOLID Demo state and operations

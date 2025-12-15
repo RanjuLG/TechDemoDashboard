@@ -1,6 +1,6 @@
-using Demo_C_.Models;
+using TechDemoDashboard.Models;
 
-namespace Demo_C_.Services;
+namespace TechDemoDashboard.Services;
 
 /// <summary>
 /// Service for managing OOP Demo state and operations

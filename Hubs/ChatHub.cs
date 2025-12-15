@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace Demo_C_.Hubs;
+namespace TechDemoDashboard.Hubs;
 
 /// <summary>
 /// SignalR Hub for real-time chat demonstration.

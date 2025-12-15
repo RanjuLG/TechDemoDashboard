@@ -1,4 +1,4 @@
-namespace Demo_C_.Models.SOLID;
+namespace TechDemoDashboard.Models.SOLID;
 
 // ============================================================================
 // S - SINGLE RESPONSIBILITY PRINCIPLE (SRP)

@@ -1,6 +1,6 @@
-using Demo_C_.Components;
-using Demo_C_.Services;
-using Demo_C_.Hubs;
+using TechDemoDashboard.Components;
+using TechDemoDashboard.Services;
+using TechDemoDashboard.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +50,7 @@ app.MapControllers();
 // Map SignalR hub
 app.MapHub<ChatHub>("/chathub");
 
-app.MapRazorComponents<Demo_C_.Components.App>()
+app.MapRazorComponents<TechDemoDashboard.Components.App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();

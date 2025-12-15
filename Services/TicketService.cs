@@ -1,4 +1,4 @@
-namespace Demo_C_.Services;
+namespace TechDemoDashboard.Services;
 
 /// <summary>
 /// Service demonstrating race conditions and locking in concurrent scenarios.

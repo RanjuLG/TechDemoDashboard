@@ -1,4 +1,4 @@
-namespace Demo_C_.Models;
+namespace TechDemoDashboard.Models;
 
 /// <summary>
 /// ABSTRACTION: Abstract base class that defines a blueprint for all heroes.

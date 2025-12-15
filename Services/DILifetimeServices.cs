@@ -1,4 +1,4 @@
-namespace Demo_C_.Services;
+namespace TechDemoDashboard.Services;
 
 /// <summary>
 /// Transient service - A new instance is created every time it is requested.
