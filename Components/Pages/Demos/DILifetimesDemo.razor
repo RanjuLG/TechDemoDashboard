@@ -25,8 +25,19 @@
 
         <!-- Interview Question -->
         <div class="alert alert-info border-info mb-4">
-            <span class="fw-bold">🎯 Interview Question:</span>
-            <span class="fst-italic">"What is the difference between Scoped and Transient services?"</span>
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span>
+                <span class="fst-italic">"What is the difference between Scoped and Transient services?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Transient:</strong> A new instance is created every time it's requested. Use for lightweight, stateless services.</li>
+                    <li><strong>Scoped:</strong> One instance per HTTP request/scope. All requests within the same scope get the same instance. Use for services that maintain state during a request.</li>
+                    <li><strong>Singleton:</strong> One instance for the entire application lifetime. Shared across all requests. Use for stateless services or shared caches.</li>
+                    <li><strong>Key Difference:</strong> Transient = always new, Scoped = new per request, Singleton = one forever.</li>
+                </ul>
+            </div>
         </div>
 
         <!-- Controls -->

@@ -12,6 +12,24 @@
         Each demo shows a BAD approach and the GOOD fix.
     </p>
 
+    <div class="alert alert-info border-info mb-4">
+        <div class="mb-2">
+            <span class="fw-bold">🎯 Interview Question:</span> 
+            <span class="fst-italic">"What are the SOLID principles and why are they important?"</span>
+        </div>
+        <div class="ms-4">
+            <strong>Answer:</strong> SOLID is an acronym for five design principles:
+            <ul class="mb-0 mt-2">
+                <li><strong>S</strong>ingle Responsibility: A class should have only one reason to change (one job).</li>
+                <li><strong>O</strong>pen/Closed: Open for extension, closed for modification (add features without changing existing code).</li>
+                <li><strong>L</strong>iskov Substitution: Subtypes must be substitutable for their base types without breaking the program.</li>
+                <li><strong>I</strong>nterface Segregation: Many specific interfaces are better than one general-purpose interface.</li>
+                <li><strong>D</strong>ependency Inversion: Depend on abstractions (interfaces), not concrete implementations.</li>
+            </ul>
+            <strong>Why important:</strong> Makes code more maintainable, testable, flexible, and easier to understand.
+        </div>
+    </div>
+
     <div class="principles-nav">
         <button class="@(ActiveTab == "SRP" ? "active" : "")" @onclick="SetTabSRP">S - Single Responsibility</button>
         <button class="@(ActiveTab == "OCP" ? "active" : "")" @onclick="SetTabOCP">O - Open/Closed</button>

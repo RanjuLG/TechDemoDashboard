@@ -19,6 +19,22 @@
             </p>
         </div>
 
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span> 
+                <span class="fst-italic">"What's the difference between async/await, Task.WhenAll, and Parallel.ForEach?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>async/await:</strong> Runs tasks sequentially (one after another). Best for I/O operations.</li>
+                    <li><strong>Task.WhenAll:</strong> Runs tasks concurrently (starts all at once, waits for all). Best for concurrent I/O operations.</li>
+                    <li><strong>Parallel.ForEach:</strong> Uses multiple CPU threads for parallel execution. Best for CPU-intensive tasks.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="card mb-4">
             <div class="card-body p-3">

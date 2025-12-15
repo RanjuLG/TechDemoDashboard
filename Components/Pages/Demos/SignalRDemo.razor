@@ -18,6 +18,22 @@
             </p>
         </div>
 
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span> 
+                <span class="fst-italic">"What's the difference between SignalR, WebSockets, and HTTP polling?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>WebSockets:</strong> Low-level protocol for bidirectional, full-duplex communication over a single TCP connection.</li>
+                    <li><strong>SignalR:</strong> High-level library that uses WebSockets when available, but falls back to Server-Sent Events or Long Polling. Provides automatic reconnection, hub abstraction, and connection management.</li>
+                    <li><strong>HTTP Polling:</strong> Client repeatedly requests updates from server. Simple but inefficient (high latency, server load).</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Connection Status -->
         <div class="mb-4">
             <div class="alert @(_isConnected ? "alert-success" : "alert-danger") d-flex align-items-center justify-content-between">

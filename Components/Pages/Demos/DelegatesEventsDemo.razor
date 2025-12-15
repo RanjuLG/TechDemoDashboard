@@ -17,6 +17,22 @@
             </p>
         </div>
 
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span> 
+                <span class="fst-italic">"What's the difference between a delegate and an event in C#?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Delegate:</strong> A type-safe function pointer that can reference one or more methods with matching signatures.</li>
+                    <li><strong>Event:</strong> A wrapper around a delegate that restricts external access. Only the declaring class can invoke it; external classes can only subscribe (+=) or unsubscribe (-=).</li>
+                    <li><strong>Key Benefit:</strong> Events prevent external code from clearing all subscribers or invoking the event directly, providing better encapsulation and safety.</li>
+                </ul>
+            </div>
+        </div>
+
         <div class="row g-4">
             <!-- Left Column: Stock Exchange & Concepts -->
             <div class="col-lg-6">
