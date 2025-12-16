@@ -194,38 +194,180 @@
         </div>
     }
 
-    <div class="info-panel">
-        <h3>📖 The Four Pillars in Code</h3>
-        <div class="code-examples">
-            <div class="code-example">
-                <h4>📐 Abstraction</h4>
-                <pre><code>public abstract class Hero
+    <!-- How it Works Section with Code Examples -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <!-- Abstraction -->
+                <div class="col-12">
+                    <div class="border-start border-warning border-3 ps-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 fw-bold text-warning mb-0">1️⃣ Abstraction - Abstract Base Class</h4>
+                            <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#oopCode1" aria-expanded="false" aria-controls="oopCode1">
+                                View Code
+                            </button>
+                        </div>
+                        <p class="small text-secondary-custom mb-2">
+                            The Hero class is abstract - you cannot create a generic "Hero", only specific types
+                        </p>
+                        <div class="collapse" id="oopCode1">
+                            <div class="bg-dark rounded p-3 mt-2">
+                                <pre class="mb-0"><code class="text-white-50 small">// Abstract base class
+public abstract class Hero
 {
-    public abstract Attack();
-    // Cannot instantiate Hero directly
+    public string Name { get; set; }
+    public int Health { get; set; }
+    public int MaxHealth { get; set; }
+    
+    // Abstract method - must be implemented by derived classes
+    public abstract string Attack();
+    
+    // Cannot do: var hero = new Hero(); ❌
+    // Must do: var hero = new Warrior(); ✅
 }</code></pre>
-            </div>
-            <div class="code-example">
-                <h4>🧬 Inheritance</h4>
-                <pre><code>public class Warrior : Hero
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inheritance -->
+                <div class="col-12">
+                    <div class="border-start border-info border-3 ps-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 fw-bold text-info mb-0">2️⃣ Inheritance - Shared Properties & Methods</h4>
+                            <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#oopCode2" aria-expanded="false" aria-controls="oopCode2">
+                                View Code
+                            </button>
+                        </div>
+                        <p class="small text-secondary-custom mb-2">
+                            Warrior, Mage, and Rogue inherit common properties from Hero
+                        </p>
+                        <div class="collapse" id="oopCode2">
+                            <div class="bg-dark rounded p-3 mt-2">
+                                <pre class="mb-0"><code class="text-white-50 small">// Warrior inherits from Hero
+public class Warrior : Hero
 {
-    // Inherits Name, Health, etc.
-    // Adds Strength property
+    public int Strength { get; set; }
+    
+    // Inherits: Name, Health, MaxHealth, TakeDamage()
+    // Adds: Strength property
+    
+    public override string Attack()
+    {
+        // Warrior-specific implementation
+        return "⚔️ Powerful sword slash!";
+    }
+}
+
+// Mage also inherits from Hero
+public class Mage : Hero
+{
+    public int Mana { get; set; }
+    public int MaxMana { get; set; }
+    
+    // Inherits same base properties
+    // Adds: Mana system
 }</code></pre>
-            </div>
-            <div class="code-example">
-                <h4>📦 Encapsulation</h4>
-                <pre><code>private int _health;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Encapsulation -->
+                <div class="col-12">
+                    <div class="border-start border-success border-3 ps-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 fw-bold text-success mb-0">3️⃣ Encapsulation - Protected State</h4>
+                            <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#oopCode3" aria-expanded="false" aria-controls="oopCode3">
+                                View Code
+                            </button>
+                        </div>
+                        <p class="small text-secondary-custom mb-2">
+                            Health property has validation to prevent invalid values
+                        </p>
+                        <div class="collapse" id="oopCode3">
+                            <div class="bg-dark rounded p-3 mt-2">
+                                <pre class="mb-0"><code class="text-white-50 small">// Private backing field
+private int _health;
+
+// Public property with validation
 public int Health
 {
-    set => _health = Math.Max(0, value);
-}</code></pre>
+    get => _health;
+    set
+    {
+        // Encapsulation: Prevent invalid values
+        _health = Math.Max(0, Math.Min(value, MaxHealth));
+        
+        // Cannot set health below 0
+        // Cannot set health above MaxHealth
+    }
+}
+
+// Usage:
+hero.Health = -100;  // Actually sets to 0
+hero.Health = 9999;  // Actually sets to MaxHealth</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Polymorphism -->
+                <div class="col-12">
+                    <div class="border-start border-danger border-3 ps-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 fw-bold text-danger mb-0">4️⃣ Polymorphism - Different Behavior</h4>
+                            <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#oopCode4" aria-expanded="false" aria-controls="oopCode4">
+                                View Code
+                            </button>
+                        </div>
+                        <p class="small text-secondary-custom mb-2">
+                            Same method name, different implementations for each hero type
+                        </p>
+                        <div class="collapse" id="oopCode4">
+                            <div class="bg-dark rounded p-3 mt-2">
+                                <pre class="mb-0"><code class="text-white-50 small">// Each hero implements Attack() differently
+public class Warrior : Hero
+{
+    public override string Attack()
+    {
+        // 20% chance for critical hit
+        return Random.Shared.Next(100) &lt; 20 
+            ? "⚔️ CRITICAL HIT! Devastating blow!" 
+            : "⚔️ Sword slash!";
+    }
+}
+
+public class Mage : Hero
+{
+    public override string Attack()
+    {
+        // Uses mana for powerful spells
+        if (Mana &gt;= 20)
+        {
+            Mana -= 20;
+            return "🔥 FIREBALL! Massive damage!";
+        }
+        return "✨ Magic missile";
+    }
+}
+
+// Same method call, different behavior:
+Hero hero1 = new Warrior();
+Hero hero2 = new Mage();
+hero1.Attack(); // Sword slash
+hero2.Attack(); // Fireball</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="code-example">
-                <h4>🎭 Polymorphism</h4>
-                <pre><code>// Same call, different behavior
-warrior.Attack(); // Sword slash
-mage.Attack();    // Fireball</code></pre>
+
+            <div class="alert alert-info mt-3 mb-0">
+                <strong>💡 Tip:</strong> Try the interactive demos above to see each OOP principle in action!
             </div>
         </div>
     </div>

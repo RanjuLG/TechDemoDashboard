@@ -207,6 +207,188 @@
                 </div>
             </div>
         </div>
+
+        <!-- How it Works Section with Code Examples -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Service Registration -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">1️⃣ Service Registration in Program.cs</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#diCode1" aria-expanded="false" aria-controls="diCode1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Register services with different lifetimes in the DI container
+                            </p>
+                            <div class="collapse" id="diCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Program.cs - Configure services
+var builder = WebApplication.CreateBuilder(args);
+
+// Transient: New instance every time
+builder.Services.AddTransient&lt;TransientService&gt;();
+
+// Scoped: One instance per HTTP request
+builder.Services.AddScoped&lt;ScopedService&gt;();
+
+// Singleton: One instance for entire app lifetime
+builder.Services.AddSingleton&lt;SingletonService&gt;();
+
+var app = builder.Build();
+app.Run();</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transient Behavior -->
+                    <div class="col-12">
+                        <div class="border-start border-danger border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-danger mb-0">2️⃣ Transient - Always New</h4>
+                                <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#diCode2" aria-expanded="false" aria-controls="diCode2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                A new instance is created every single time it's requested
+                            </p>
+                            <div class="collapse" id="diCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Service definition
+public class TransientService
+{
+    public Guid InstanceId { get; }
+    
+    public TransientService()
+    {
+        // New GUID every time = new instance
+        InstanceId = Guid.NewGuid();
+    }
+}
+
+// Component usage
+@inject TransientService Transient1
+@inject TransientService Transient2
+
+// Result:
+// Transient1.InstanceId = 123e4567-e89b-12d3-a456...
+// Transient2.InstanceId = 987f6543-e21c-34d5-b678...
+// ❌ Different! Each injection gets a NEW instance
+
+// Use case: Lightweight, stateless operations</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scoped Behavior -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">3️⃣ Scoped - One Per Request</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#diCode3" aria-expanded="false" aria-controls="diCode3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Same instance within a request, different across requests
+                            </p>
+                            <div class="collapse" id="diCode3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Service definition
+public class ScopedService
+{
+    public Guid InstanceId { get; }
+    
+    public ScopedService()
+    {
+        InstanceId = Guid.NewGuid();
+    }
+}
+
+// Component usage
+@inject ScopedService Scoped1
+@inject ScopedService Scoped2
+
+// Within SAME request:
+// Scoped1.InstanceId = 123e4567-e89b-12d3-a456...
+// Scoped2.InstanceId = 123e4567-e89b-12d3-a456...
+// ✅ Same! Both injections share the instance
+
+// Refresh page (NEW request):
+// Scoped1.InstanceId = 987f6543-e21c-34d5-b678...
+// Scoped2.InstanceId = 987f6543-e21c-34d5-b678...
+// ✅ Still same within request, but DIFFERENT from before
+
+// Use case: DbContext, per-request state</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Singleton Behavior -->
+                    <div class="col-12">
+                        <div class="border-start border-warning border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-warning mb-0">4️⃣ Singleton - One Forever</h4>
+                                <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#diCode4" aria-expanded="false" aria-controls="diCode4">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Same instance across all requests for the entire application lifetime
+                            </p>
+                            <div class="collapse" id="diCode4">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Service definition
+public class SingletonService
+{
+    public Guid InstanceId { get; }
+    
+    public SingletonService()
+    {
+        // Only called ONCE when app starts
+        InstanceId = Guid.NewGuid();
+    }
+}
+
+// Component usage
+@inject SingletonService Singleton1
+@inject SingletonService Singleton2
+
+// First request:
+// Singleton1.InstanceId = 123e4567-e89b-12d3-a456...
+// Singleton2.InstanceId = 123e4567-e89b-12d3-a456...
+// ✅ Same!
+
+// Refresh page (new request):
+// Singleton1.InstanceId = 123e4567-e89b-12d3-a456...
+// Singleton2.InstanceId = 123e4567-e89b-12d3-a456...
+// ✅ STILL the same! Never changes!
+
+// Even restart browser:
+// ✅ STILL the same until app restarts!
+
+// Use case: Configuration, caching, logging</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    <strong>⚠️ Important:</strong> Never inject a Scoped service into a Singleton! The Singleton lives forever, but the Scoped service expects to be recreated per request. This causes memory leaks and unexpected behavior.
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

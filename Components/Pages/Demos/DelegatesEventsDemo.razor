@@ -240,6 +240,179 @@
                 </div>
             </div>
         </div>
+
+        <!-- How it Works Section with Code Examples -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Delegate Declaration -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">1️⃣ Delegate - Type-Safe Function Pointer</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode1" aria-expanded="false" aria-controls="delegateCode1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Defines the signature for methods that can handle price change notifications
+                            </p>
+                            <div class="collapse" id="delegateCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Delegate declaration - defines method signature
+public delegate void PriceChangedHandler(
+    object sender,              // Who raised the event
+    PriceChangedEventArgs e     // Event data
+);
+
+// EventArgs contains the event data
+public class PriceChangedEventArgs : EventArgs
+{
+    public string Symbol { get; set; }
+    public decimal OldPrice { get; set; }
+    public decimal NewPrice { get; set; }
+    public decimal Change { get; set; }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Declaration -->
+                    <div class="col-12">
+                        <div class="border-start border-warning border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-warning mb-0">2️⃣ Event - Protected Delegate</h4>
+                                <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode2" aria-expanded="false" aria-controls="delegateCode2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                The StockExchange declares an event that subscribers can listen to
+                            </p>
+                            <div class="collapse" id="delegateCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Publisher class
+public class StockExchange
+{
+    // Event declaration using the delegate
+    public event PriceChangedHandler? OnPriceChanged;
+    
+    public decimal CurrentPrice { get; private set; }
+    
+    public void UpdatePrice(decimal newPrice)
+    {
+        decimal oldPrice = CurrentPrice;
+        CurrentPrice = newPrice;
+        
+        // Raise the event (only the owner can do this!)
+        OnPriceChanged?.Invoke(this, new PriceChangedEventArgs
+        {
+            Symbol = "TECH",
+            OldPrice = oldPrice,
+            NewPrice = newPrice,
+            Change = newPrice - oldPrice
+        });
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subscribing -->
+                    <div class="col-12">
+                        <div class="border-start border-success border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-success mb-0">3️⃣ Subscribing to Events</h4>
+                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode3" aria-expanded="false" aria-controls="delegateCode3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Traders subscribe to the event to get notified of price changes
+                            </p>
+                            <div class="collapse" id="delegateCode3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Subscriber class
+public class Trader
+{
+    public string Name { get; set; }
+    
+    // Method that matches the delegate signature
+    public void OnPriceChanged(object sender, PriceChangedEventArgs e)
+    {
+        Console.WriteLine($"{Name} notified: {e.Symbol} " +
+                         $"changed from ${e.OldPrice} to ${e.NewPrice}");
+    }
+}
+
+// Subscribe to the event
+var exchange = new StockExchange();
+var trader = new Trader { Name = "Bull Trader" };
+
+// += subscribes to the event
+exchange.OnPriceChanged += trader.OnPriceChanged;
+
+// Now when price changes, trader gets notified automatically!
+exchange.UpdatePrice(150.00m); // Trader receives notification</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Flow -->
+                    <div class="col-12">
+                        <div class="border-start border-primary border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-primary-custom mb-0">4️⃣ The Complete Flow</h4>
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode4" aria-expanded="false" aria-controls="delegateCode4">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                How everything works together in the Publisher/Subscriber pattern
+                            </p>
+                            <div class="collapse" id="delegateCode4">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// 1. Create publisher
+var exchange = new StockExchange();
+
+// 2. Create subscribers
+var bullTrader = new BullTrader();
+var bearTrader = new BearTrader();
+var newsAlert = new NewsAlert();
+
+// 3. Subscribe to events
+exchange.OnPriceChanged += bullTrader.OnPriceChanged;
+exchange.OnPriceChanged += bearTrader.OnPriceChanged;
+exchange.OnPriceChanged += newsAlert.OnPriceChanged;
+
+// 4. Publisher raises event
+exchange.UpdatePrice(150.00m);
+
+// 5. ALL subscribers get notified automatically!
+// Output:
+// "Bull Trader: Price went UP! Time to buy!"
+// "Bear Trader: Price went UP! Time to sell!"
+// "News Alert: TECH changed from $100 to $150"
+
+// 6. Unsubscribe when done
+exchange.OnPriceChanged -= bullTrader.OnPriceChanged;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>💡 Key Benefit:</strong> The publisher (StockExchange) doesn't need to know about its subscribers. Subscribers can be added or removed dynamically without changing the publisher's code!
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

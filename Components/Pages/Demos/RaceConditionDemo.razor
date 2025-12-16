@@ -149,36 +149,134 @@
             </div>
         </div>
 
-        <!-- Code Comparison -->
+        <!-- How it Works Section with Code Examples -->
         <div class="card">
             <div class="card-header">
-                <h3 class="h6 mb-0 fw-bold">📖 The Fix: Using Locks</h3>
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
             </div>
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="border border-danger rounded p-3 bg-danger bg-opacity-10">
-                            <h4 class="h6 text-danger mb-2">❌ Unsafe (Race Condition)</h4>
-                            <pre class="mb-0"><code class="text-white-50">if (tickets > 0)
+                <div class="row g-4">
+                    <!-- The Problem -->
+                    <div class="col-12">
+                        <div class="border-start border-danger border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-danger mb-0">1️⃣ The Problem - Race Condition</h4>
+                                <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#raceCode1" aria-expanded="false" aria-controls="raceCode1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Multiple threads access shared data simultaneously without synchronization
+                            </p>
+                            <div class="collapse" id="raceCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ❌ UNSAFE - Race Condition
+private int tickets = 1;
+
+public void BuyTicket()
 {
-    Thread.Sleep(10); // Latency
-    tickets--;        // BUG: Others may have decremented!
-}</code></pre>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border border-success rounded p-3 bg-success bg-opacity-10">
-                            <h4 class="h6 text-success mb-2">✅ Safe (With Lock)</h4>
-                            <pre class="mb-0"><code class="text-white-50">lock (_lockObject)
-{
-    if (tickets > 0)
+    // Thread 1 reads: tickets = 1 ✅
+    // Thread 2 reads: tickets = 1 ✅ (BOTH see 1!)
+    if (tickets &gt; 0)
     {
-        Thread.Sleep(10);
-        tickets--;    // Only one thread at a time
+        Thread.Sleep(10); // Simulate network latency
+        
+        // Thread 1 decrements: tickets = 0
+        // Thread 2 ALSO decrements: tickets = -1 💥
+        tickets--;
     }
-}</code></pre>
+}
+
+// Result: OVERSOLD! tickets = -1
+// Both threads thought they could buy!</code></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- The Solution -->
+                    <div class="col-12">
+                        <div class="border-start border-success border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-success mb-0">2️⃣ The Solution - Lock Statement</h4>
+                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#raceCode2" aria-expanded="false" aria-controls="raceCode2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Lock ensures only one thread can access the critical section at a time
+                            </p>
+                            <div class="collapse" id="raceCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ✅ SAFE - With Lock
+private int tickets = 1;
+private readonly object _lockObject = new();
+
+public void BuyTicket()
+{
+    lock (_lockObject)  // Only one thread at a time!
+    {
+        // Thread 1 enters, Thread 2 WAITS
+        if (tickets &gt; 0)
+        {
+            Thread.Sleep(10);
+            tickets--;  // Thread 1: tickets = 0
+        }
+        // Thread 1 exits lock
+        
+        // NOW Thread 2 can enter
+        // Thread 2 sees tickets = 0, cannot buy ✅
+    }
+}
+
+// Result: Perfect! tickets = 0
+// Only 1 ticket sold, as expected</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Best Practices -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">3️⃣ Best Practices</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#raceCode3" aria-expanded="false" aria-controls="raceCode3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Always use a private readonly object for locking
+                            </p>
+                            <div class="collapse" id="raceCode3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ✅ GOOD: Private readonly lock object
+private readonly object _lockObject = new();
+
+lock (_lockObject)
+{
+    // Critical section
+}
+
+// ❌ BAD: Don't lock on 'this'
+lock (this) { } // External code can lock on your instance!
+
+// ❌ BAD: Don't lock on a Type
+lock (typeof(MyClass)) { } // Locks across all instances!
+
+// ❌ BAD: Don't lock on strings
+lock ("myLock") { } // String interning can cause issues!
+
+// 💡 Keep the locked section as SMALL as possible
+// Only protect the critical shared data access</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    <strong>⚠️ Key Takeaway:</strong> Race conditions occur when multiple threads access shared mutable state without synchronization. Always use locks to protect critical sections!
                 </div>
             </div>
         </div>
