@@ -130,8 +130,172 @@
             </div>
         }
 
-        <!-- Log Output -->
-        <DemoContainer @ref="_demoContainer" Title="Execution Log" IsBusy="@_isBusy" />
+        <!-- How it Works Section with Code Examples -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Sequential Execution -->
+                    <div class="col-12">
+                        <div class="border-start border-danger border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-danger mb-0">1️⃣ Sequential - Blocking Execution</h4>
+                                <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#concurrencyCode1" aria-expanded="false" aria-controls="concurrencyCode1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Tasks run one after another, blocking the UI thread
+                            </p>
+                            <div class="collapse" id="concurrencyCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ❌ BLOCKS UI - Don't do this!
+public void ProcessDataSequential()
+{
+    // Task 1 - blocks for 2 seconds
+    Thread.Sleep(2000);
+    Console.WriteLine("Task 1 complete");
+    
+    // Task 2 - blocks for 2 seconds
+    Thread.Sleep(2000);
+    Console.WriteLine("Task 2 complete");
+    
+    // Task 3 - blocks for 2 seconds
+    Thread.Sleep(2000);
+    Console.WriteLine("Task 3 complete");
+}
+
+// Total time: 6 seconds
+// UI: FROZEN during entire execution! ❌</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Async Sequential -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">2️⃣ Async - Sequential but Non-Blocking</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#concurrencyCode2" aria-expanded="false" aria-controls="concurrencyCode2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Tasks still run sequentially, but UI remains responsive
+                            </p>
+                            <div class="collapse" id="concurrencyCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ✅ UI Responsive - Tasks run one after another
+public async Task ProcessDataAsync()
+{
+    // Task 1 - awaits for 2 seconds (UI responsive!)
+    await Task.Delay(2000);
+    Console.WriteLine("Task 1 complete");
+    
+    // Task 2 - awaits for 2 seconds
+    await Task.Delay(2000);
+    Console.WriteLine("Task 2 complete");
+    
+    // Task 3 - awaits for 2 seconds
+    await Task.Delay(2000);
+    Console.WriteLine("Task 3 complete");
+}
+
+// Total time: 6 seconds (same as sequential)
+// UI: Responsive! ✅
+// Best for: I/O operations (database, API calls)</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Concurrent Execution -->
+                    <div class="col-12">
+                        <div class="border-start border-warning border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-warning mb-0">3️⃣ Concurrent - Task.WhenAll</h4>
+                                <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#concurrencyCode3" aria-expanded="false" aria-controls="concurrencyCode3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                All tasks start at once and run concurrently
+                            </p>
+                            <div class="collapse" id="concurrencyCode3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// 🔥 FASTEST for I/O - All tasks run concurrently
+public async Task ProcessDataConcurrent()
+{
+    // Start all tasks at once (don't await yet!)
+    var task1 = Task.Delay(2000)
+        .ContinueWith(_ => Console.WriteLine("Task 1 complete"));
+    var task2 = Task.Delay(2000)
+        .ContinueWith(_ => Console.WriteLine("Task 2 complete"));
+    var task3 = Task.Delay(2000)
+        .ContinueWith(_ => Console.WriteLine("Task 3 complete"));
+    
+    // Wait for ALL to complete
+    await Task.WhenAll(task1, task2, task3);
+}
+
+// Total time: 2 seconds (all run at same time!)
+// UI: Responsive! ✅
+// Best for: Multiple independent I/O operations</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parallel Execution -->
+                    <div class="col-12">
+                        <div class="border-start border-3 ps-3" style="border-color: #a855f7;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold mb-0" style="color: #a855f7;">4️⃣ Parallel - CPU-Bound Processing</h4>
+                                <button class="btn btn-sm btn-outline" style="color: #a855f7; border-color: #a855f7;" type="button" data-bs-toggle="collapse" data-bs-target="#concurrencyCode4" aria-expanded="false" aria-controls="concurrencyCode4">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Uses multiple CPU threads for parallel processing
+                            </p>
+                            <div class="collapse" id="concurrencyCode4">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// 🚀 FASTEST for CPU work - Uses multiple threads
+public void ProcessDataParallel()
+{
+    var items = Enumerable.Range(1, 100).ToList();
+    
+    // Process items in parallel across multiple CPU cores
+    Parallel.ForEach(items, 
+        new ParallelOptions 
+        { 
+            MaxDegreeOfParallelism = 4  // Use 4 threads
+        },
+        item =>
+        {
+            // CPU-intensive work
+            var result = ComplexCalculation(item);
+            Console.WriteLine($"Processed {item}: {result}");
+        });
+}
+
+// Uses: Multiple CPU threads
+// Best for: CPU-intensive calculations, image processing
+// Note: Doesn't help with I/O-bound operations!</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>💡 Key Takeaway:</strong> Use <strong>async/await</strong> for I/O operations, <strong>Task.WhenAll</strong> for concurrent I/O, and <strong>Parallel.ForEach</strong> for CPU-intensive work!
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

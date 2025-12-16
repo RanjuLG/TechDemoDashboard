@@ -170,6 +170,78 @@
                 </div>
             </div>
         }
+
+        <!-- How it Works -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="h6 mb-0 fw-bold">📖 How it Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border-start border-danger border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="h6 fw-bold text-danger mb-0">❌ Violation</h5>
+                                <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#srpCode1" aria-expanded="false">
+                                    View Code
+                                </button>
+                            </div>
+                            <div class="collapse" id="srpCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ❌ BAD: One class, multiple responsibilities
+public class UserManager
+{
+    public void SaveAndEmail(User user, string email)
+    {
+        // Responsibility 1: Data persistence
+        Database.Save(user);
+        
+        // Responsibility 2: Email sending
+        EmailService.Send(email, "Welcome!");
+        
+        // Problem: Changes to email logic require
+        // modifying the UserManager class
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border-start border-success border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="h6 fw-bold text-success mb-0">✅ Solution</h5>
+                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#srpCode2" aria-expanded="false">
+                                    View Code
+                                </button>
+                            </div>
+                            <div class="collapse" id="srpCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// ✅ GOOD: Separate responsibilities
+public class UserRepository
+{
+    public void Save(User user)
+    {
+        Database.Save(user);
+    }
+}
+
+public class EmailNotifier
+{
+    public void SendWelcome(string email)
+    {
+        EmailService.Send(email, "Welcome!");
+    }
+}
+
+// Each class has ONE reason to change</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>;
 
     private RenderFragment OCPDemo => @<div class="principle-demo">
@@ -196,7 +268,7 @@
             </div>
 
             <div class="aha-moment">
-                <h4>💡 The "Aha!" Moment</h4>
+                <h4>💡</h4>
                 <p>Each option uses a DIFFERENT class (EmailMessage, SmsMessage, PushMessage, SlackMessage),<br/>
                 but <code>NotificationSender</code> <strong>never changes!</strong></p>
             </div>
@@ -214,6 +286,55 @@
                 </div>
             </div>
         }
+
+        <!-- How it Works -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="h6 mb-0 fw-bold">📖 How it Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="border-start border-info border-3 ps-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="h6 fw-bold text-info mb-0">Extension without Modification</h5>
+                        <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#ocpCode1" aria-expanded="false">
+                            View Code
+                        </button>
+                    </div>
+                    <div class="collapse" id="ocpCode1">
+                        <div class="bg-dark rounded p-3 mt-2">
+                            <pre class="mb-0"><code class="text-white-50 small">// Base interface - never changes
+public interface IMessage
+{
+    string Send();
+}
+
+// Add new message types by creating new classes
+public class EmailMessage : IMessage
+{
+    public string Send() =&gt; "📧 Email sent!";
+}
+
+public class SmsMessage : IMessage
+{
+    public string Send() =&gt; "📱 SMS sent!";
+}
+
+// NotificationSender works with ANY IMessage
+public class NotificationSender
+{
+    public string Send(IMessage message)
+    {
+        return message.Send(); // Polymorphism!
+    }
+}
+
+// Add Slack support? Just create new class!
+// NO need to modify NotificationSender ✅</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>;
 
     private RenderFragment LSPDemo => @<div class="principle-demo">
@@ -255,6 +376,54 @@
                 }
             </div>
         }
+
+        <!-- How it Works -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="h6 mb-0 fw-bold">📖 How it Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="border-start border-warning border-3 ps-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="h6 fw-bold text-warning mb-0">The Penguin Problem</h5>
+                        <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#lspCode1" aria-expanded="false">
+                            View Code
+                        </button>
+                    </div>
+                    <div class="collapse" id="lspCode1">
+                        <div class="bg-dark rounded p-3 mt-2">
+                            <pre class="mb-0"><code class="text-white-50 small">// ❌ BAD: Penguin violates LSP
+public abstract class Bird
+{
+    public abstract void Fly();
+}
+
+public class Penguin : Bird
+{
+    public override void Fly()
+    {
+        throw new Exception("Penguins can't fly!");
+    }
+}
+
+// ✅ GOOD: Use interfaces for capabilities
+public interface IFlyable
+{
+    void Fly();
+}
+
+public class Duck : IFlyable
+{
+    public void Fly() =&gt; Console.WriteLine("Flying!");
+}
+
+// Penguin doesn't implement IFlyable
+public class Penguin { }</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>;
 
     private RenderFragment ISPDemo => @<div class="principle-demo">
@@ -306,6 +475,59 @@
                 }
             </div>
         }
+
+        <!-- How it Works -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="h6 mb-0 fw-bold">📖 How it Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="border-start border-success border-3 ps-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="h6 fw-bold text-success mb-0">Segregated Interfaces</h5>
+                        <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#ispCode1" aria-expanded="false">
+                            View Code
+                        </button>
+                    </div>
+                    <div class="collapse" id="ispCode1">
+                        <div class="bg-dark rounded p-3 mt-2">
+                            <pre class="mb-0"><code class="text-white-50 small">// ❌ BAD: Fat interface
+public interface IMultiFunctionDevice
+{
+    void Print();
+    void Scan();
+    void Fax();
+}
+
+// Old printer forced to implement unused methods
+public class OldPrinter : IMultiFunctionDevice
+{
+    public void Print() { /* Works */ }
+    public void Scan() { throw new NotImplementedException(); }
+    public void Fax() { throw new NotImplementedException(); }
+}
+
+// ✅ GOOD: Segregated interfaces
+public interface IPrinter { void Print(); }
+public interface IScanner { void Scan(); }
+public interface IFax { void Fax(); }
+
+public class OldPrinter : IPrinter
+{
+    public void Print() { /* Works */ }
+}
+
+public class ModernXerox : IPrinter, IScanner, IFax
+{
+    public void Print() { }
+    public void Scan() { }
+    public void Fax() { }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>;
 
     private RenderFragment DIPDemo => @<div class="principle-demo">
@@ -363,8 +585,65 @@
                 </div>
             </div>
         }
+
+        <!-- How it Works -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="h6 mb-0 fw-bold">📖 How it Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="border-start border-primary border-3 ps-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="h6 fw-bold text-primary-custom mb-0">Depend on Abstractions</h5>
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#dipCode1" aria-expanded="false">
+                            View Code
+                        </button>
+                    </div>
+                    <div class="collapse" id="dipCode1">
+                        <div class="bg-dark rounded p-3 mt-2">
+                            <pre class="mb-0"><code class="text-white-50 small">// ❌ BAD: Depends on concrete class
+public class SmartSwitch
+{
+    private LightBulb _bulb = new LightBulb();
+    
+    public void Toggle()
+    {
+        _bulb.TurnOn(); // Tightly coupled!
+    }
+}
+
+// ✅ GOOD: Depends on interface
+public interface ISwitchable
+{
+    void TurnOn();
+    void TurnOff();
+}
+
+public class SmartSwitch
+{
+    private ISwitchable _device;
+    
+    public SmartSwitch(ISwitchable device)
+    {
+        _device = device; // Dependency injection!
+    }
+    
+    public void Toggle()
+    {
+        _device.TurnOn(); // Works with ANY ISwitchable!
+    }
+}
+
+// Can now control lights, fans, coffee makers, etc.
+// without changing SmartSwitch!</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>;
 }
+
 
 <style>
     .demo-page {
