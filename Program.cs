@@ -23,6 +23,7 @@ builder.Services.AddSingleton<TicketService>();
 builder.Services.AddScoped<OOPDemoService>();
 builder.Services.AddScoped<SOLIDDemoService>();
 builder.Services.AddScoped<DelegatesEventsService>();
+builder.Services.AddScoped<CQRSService>();
 
 // Add SignalR for real-time communication
 builder.Services.AddSignalR();

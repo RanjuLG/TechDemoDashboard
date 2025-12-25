@@ -1,0 +1,427 @@
+@page "/demos/delegates-events"
+@using TechDemoDashboard.Services
+@rendermode InteractiveServer
+
+<PageTitle>Delegates & Events Demo</PageTitle>
+
+<div class="min-vh-100 bg-dark-custom p-4">
+    <div class="container-fluid" style="max-width: 1400px;">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-primary-custom mb-2">
+                <span class="me-2">📊</span>Delegates & Events - Stock Market
+            </h1>
+            <p class="text-secondary-custom">
+                Watch how the <strong class="text-white">Publisher/Subscriber pattern</strong> works with delegates and events.
+                The Stock Exchange fires price change events, and traders automatically respond!
+            </p>
+        </div>
+
+        <!-- Interview Question -->
+        <div class="alert alert-info border-info mb-4">
+            <div class="mb-2">
+                <span class="fw-bold">🎯 Interview Question:</span> 
+                <span class="fst-italic">"What's the difference between a delegate and an event in C#?"</span>
+            </div>
+            <div class="ms-4">
+                <strong>Answer:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Delegate:</strong> A type-safe function pointer that can reference one or more methods with matching signatures.</li>
+                    <li><strong>Event:</strong> A wrapper around a delegate that restricts external access. Only the declaring class can invoke it; external classes can only subscribe (+=) or unsubscribe (-=).</li>
+                    <li><strong>Key Benefit:</strong> Events prevent external code from clearing all subscribers or invoking the event directly, providing better encapsulation and safety.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: Stock Exchange & Concepts -->
+            <div class="col-lg-6">
+                <!-- Stock Exchange Panel -->
+                <div class="card mb-4">
+                    <div class="card-body p-4">
+                        <div class="text-center p-4 rounded mb-4" style="background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(78, 205, 196, 0.1));">
+                            <div class="h4 fw-bold text-info mb-2">@Service.Exchange.Symbol</div>
+                            <div class="display-4 fw-bold text-primary-custom mb-3">$@Service.Exchange.CurrentPrice.ToString("F2")</div>
+                            <button class="btn btn-primary btn-lg px-4" @onclick="ChangePrice">
+                                <span class="me-2">🔄</span>Change Price
+                            </button>
+                        </div>
+
+                        <div class="alert alert-info border-info">
+                            <h3 class="h6 fw-bold mb-2">📌 The Publisher</h3>
+                            <p class="mb-2 small"><code>StockExchange</code> has an <strong>event</strong> that fires when price changes.</p>
+                            <pre class="mb-2"><code>public event PriceChangedHandler? OnPriceChanged;</code></pre>
+                            <p class="mb-0 small text-warning"><em>Only the owner can <code>Invoke()</code> the event!</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Concepts -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0 fw-bold">💡 Key Concepts</h2>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded">
+                                    <h3 class="h6 fw-bold text-info mb-2">🎯 Delegate</h3>
+                                    <p class="small text-secondary-custom mb-2">A <strong>type-safe function pointer</strong>. Defines the signature for methods.</p>
+                                    <pre class="mb-0"><code class="small">public delegate void PriceChangedHandler(object sender, PriceChangedEventArgs e);</code></pre>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded">
+                                    <h3 class="h6 fw-bold text-info mb-2">🔔 Event</h3>
+                                    <p class="small text-secondary-custom mb-2">A <strong>protected delegate</strong>. Only the publisher can fire it.</p>
+                                    <pre class="mb-0"><code class="small">public event PriceChangedHandler? OnPriceChanged;</code></pre>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded">
+                                    <h3 class="h6 fw-bold text-info mb-2">➕ Subscribe</h3>
+                                    <p class="small text-secondary-custom mb-2">Attach a method to an event using <code>+=</code></p>
+                                    <pre class="mb-0"><code class="small">exchange.OnPriceChanged += trader.OnPriceChanged;</code></pre>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded">
+                                    <h3 class="h6 fw-bold text-info mb-2">➖ Unsubscribe</h3>
+                                    <p class="small text-secondary-custom mb-2">Remove a method from an event using <code>-=</code></p>
+                                    <pre class="mb-0"><code class="small">exchange.OnPriceChanged -= trader.OnPriceChanged;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Subscribers & Activity -->
+            <div class="col-lg-6">
+                <!-- Subscribers Panel -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0 fw-bold">Active Subscribers</h2>
+                    </div>
+                    <div class="card-body p-3">
+                        <p class="text-secondary-custom small mb-3">Toggle traders on/off to see dynamic subscription (<code>+=</code> and <code>-=</code>)</p>
+                        
+                        <div class="row g-3">
+                            <!-- Bull Trader -->
+                            <div class="col-md-6">
+                                <div class="card @(Service.IsBullSubscribed ? "border-success" : "border-secondary") h-100">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fs-4">🐂</span>
+                                                <span class="fw-bold text-white">@Service.BullTrader.Name</span>
+                                            </div>
+                                            <button class="btn btn-sm @(Service.IsBullSubscribed ? "btn-outline-danger" : "btn-outline-success")" @onclick="Service.ToggleBull">
+                                                @(Service.IsBullSubscribed ? "Unsubscribe" : "Subscribe")
+                                            </button>
+                                        </div>
+                                        <p class="small text-secondary-custom mb-2">Buys when price goes UP ⬆️</p>
+                                        @if (Service.IsBullSubscribed)
+                                        {
+                                            <span class="badge bg-success">✅ Listening</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">⏸️ Inactive</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bear Trader -->
+                            <div class="col-md-6">
+                                <div class="card @(Service.IsBearSubscribed ? "border-success" : "border-secondary") h-100">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fs-4">🐻</span>
+                                                <span class="fw-bold text-white">@Service.BearTrader.Name</span>
+                                            </div>
+                                            <button class="btn btn-sm @(Service.IsBearSubscribed ? "btn-outline-danger" : "btn-outline-success")" @onclick="Service.ToggleBear">
+                                                @(Service.IsBearSubscribed ? "Unsubscribe" : "Subscribe")
+                                            </button>
+                                        </div>
+                                        <p class="small text-secondary-custom mb-2">Sells when price goes DOWN ⬇️</p>
+                                        @if (Service.IsBearSubscribed)
+                                        {
+                                            <span class="badge bg-success">✅ Listening</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">⏸️ Inactive</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Day Trader -->
+                            <div class="col-md-6">
+                                <div class="card @(Service.IsDayTraderSubscribed ? "border-success" : "border-secondary") h-100">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fs-4">📈</span>
+                                                <span class="fw-bold text-white">@Service.DayTrader.Name</span>
+                                            </div>
+                                            <button class="btn btn-sm @(Service.IsDayTraderSubscribed ? "btn-outline-danger" : "btn-outline-success")" @onclick="Service.ToggleDayTrader">
+                                                @(Service.IsDayTraderSubscribed ? "Unsubscribe" : "Subscribe")
+                                            </button>
+                                        </div>
+                                        <p class="small text-secondary-custom mb-2">Trades on volatility > 5%</p>
+                                        @if (Service.IsDayTraderSubscribed)
+                                        {
+                                            <span class="badge bg-success">✅ Listening</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">⏸️ Inactive</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- News Alert -->
+                            <div class="col-md-6">
+                                <div class="card @(Service.IsNewsSubscribed ? "border-success" : "border-secondary") h-100">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fs-4">📰</span>
+                                                <span class="fw-bold text-white">@Service.NewsAlert.Source</span>
+                                            </div>
+                                            <button class="btn btn-sm @(Service.IsNewsSubscribed ? "btn-outline-danger" : "btn-outline-success")" @onclick="Service.ToggleNews">
+                                                @(Service.IsNewsSubscribed ? "Unsubscribe" : "Subscribe")
+                                            </button>
+                                        </div>
+                                        <p class="small text-secondary-custom mb-2">Reports all price changes</p>
+                                        @if (Service.IsNewsSubscribed)
+                                        {
+                                            <span class="badge bg-success">✅ Listening</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">⏸️ Inactive</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0 fw-bold">📋 Activity Log</h2>
+                        <button class="btn btn-sm btn-secondary" @onclick="Service.ClearLogs">Clear</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-3 bg-dark rounded" style="max-height: 400px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem;">
+                            @if (!Service.GlobalActivityLog.Any())
+                            {
+                                <div class="text-center text-muted py-4">
+                                    Click "Change Price" to see events in action!
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var entry in Service.GlobalActivityLog.TakeLast(20).Reverse())
+                                {
+                                    <div class="text-secondary-custom py-1 border-bottom border-secondary">@entry</div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it Works Section with Code Examples -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h6 mb-0 fw-bold">📖 How it Works</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Delegate Declaration -->
+                    <div class="col-12">
+                        <div class="border-start border-info border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-info mb-0">1️⃣ Delegate - Type-Safe Function Pointer</h4>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode1" aria-expanded="false" aria-controls="delegateCode1">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Defines the signature for methods that can handle price change notifications
+                            </p>
+                            <div class="collapse" id="delegateCode1">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Delegate declaration - defines method signature
+public delegate void PriceChangedHandler(
+    object sender,              // Who raised the event
+    PriceChangedEventArgs e     // Event data
+);
+
+// EventArgs contains the event data
+public class PriceChangedEventArgs : EventArgs
+{
+    public string Symbol { get; set; }
+    public decimal OldPrice { get; set; }
+    public decimal NewPrice { get; set; }
+    public decimal Change { get; set; }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Declaration -->
+                    <div class="col-12">
+                        <div class="border-start border-warning border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-warning mb-0">2️⃣ Event - Protected Delegate</h4>
+                                <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode2" aria-expanded="false" aria-controls="delegateCode2">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                The StockExchange declares an event that subscribers can listen to
+                            </p>
+                            <div class="collapse" id="delegateCode2">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Publisher class
+public class StockExchange
+{
+    // Event declaration using the delegate
+    public event PriceChangedHandler? OnPriceChanged;
+    
+    public decimal CurrentPrice { get; private set; }
+    
+    public void UpdatePrice(decimal newPrice)
+    {
+        decimal oldPrice = CurrentPrice;
+        CurrentPrice = newPrice;
+        
+        // Raise the event (only the owner can do this!)
+        OnPriceChanged?.Invoke(this, new PriceChangedEventArgs
+        {
+            Symbol = "TECH",
+            OldPrice = oldPrice,
+            NewPrice = newPrice,
+            Change = newPrice - oldPrice
+        });
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subscribing -->
+                    <div class="col-12">
+                        <div class="border-start border-success border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-success mb-0">3️⃣ Subscribing to Events</h4>
+                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode3" aria-expanded="false" aria-controls="delegateCode3">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                Traders subscribe to the event to get notified of price changes
+                            </p>
+                            <div class="collapse" id="delegateCode3">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// Subscriber class
+public class Trader
+{
+    public string Name { get; set; }
+    
+    // Method that matches the delegate signature
+    public void OnPriceChanged(object sender, PriceChangedEventArgs e)
+    {
+        Console.WriteLine($"{Name} notified: {e.Symbol} " +
+                         $"changed from ${e.OldPrice} to ${e.NewPrice}");
+    }
+}
+
+// Subscribe to the event
+var exchange = new StockExchange();
+var trader = new Trader { Name = "Bull Trader" };
+
+// += subscribes to the event
+exchange.OnPriceChanged += trader.OnPriceChanged;
+
+// Now when price changes, trader gets notified automatically!
+exchange.UpdatePrice(150.00m); // Trader receives notification</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Flow -->
+                    <div class="col-12">
+                        <div class="border-start border-primary border-3 ps-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="h6 fw-bold text-primary-custom mb-0">4️⃣ The Complete Flow</h4>
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#delegateCode4" aria-expanded="false" aria-controls="delegateCode4">
+                                    View Code
+                                </button>
+                            </div>
+                            <p class="small text-secondary-custom mb-2">
+                                How everything works together in the Publisher/Subscriber pattern
+                            </p>
+                            <div class="collapse" id="delegateCode4">
+                                <div class="bg-dark rounded p-3 mt-2">
+                                    <pre class="mb-0"><code class="text-white-50 small">// 1. Create publisher
+var exchange = new StockExchange();
+
+// 2. Create subscribers
+var bullTrader = new BullTrader();
+var bearTrader = new BearTrader();
+var newsAlert = new NewsAlert();
+
+// 3. Subscribe to events
+exchange.OnPriceChanged += bullTrader.OnPriceChanged;
+exchange.OnPriceChanged += bearTrader.OnPriceChanged;
+exchange.OnPriceChanged += newsAlert.OnPriceChanged;
+
+// 4. Publisher raises event
+exchange.UpdatePrice(150.00m);
+
+// 5. ALL subscribers get notified automatically!
+// Output:
+// "Bull Trader: Price went UP! Time to buy!"
+// "Bear Trader: Price went UP! Time to sell!"
+// "News Alert: TECH changed from $100 to $150"
+
+// 6. Unsubscribe when done
+exchange.OnPriceChanged -= bullTrader.OnPriceChanged;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>💡 Key Benefit:</strong> The publisher (StockExchange) doesn't need to know about its subscribers. Subscribers can be added or removed dynamically without changing the publisher's code!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private DelegatesEventsService Service { get; set; } = default!;
+
+    private void ChangePrice()
+    {
+        Service.ChangePrice();
+    }
+}
